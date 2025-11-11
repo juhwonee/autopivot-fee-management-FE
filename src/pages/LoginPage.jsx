@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import SocialLoginButton from '../components/auth/SocialLoginButton';
 import './LoginPage.css';
 
-const LoginPage = () => {
-  const navigate = useNavigate();
+const LoginPage = () => { 
   const [loading, setLoading] = useState(false);
 
   const handleSocialLogin = async (provider) => {
