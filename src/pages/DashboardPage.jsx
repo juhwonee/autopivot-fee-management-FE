@@ -6,7 +6,7 @@ import './DashboardPage.css';
 
 const DashboardPage = () => {
   // 임시 데이터 (나중에 API로 대체)
-  const [dashboardData, setDashboardData] = useState({
+  const dashboardData = useState({
     summary: {
       paidCount: 8,
       unpaidCount: 2,
