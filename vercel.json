@@ -8,5 +8,13 @@
       "source": "/api/(.*)",
       "destination": "https://seongchan-spring.store/$1"
     }
+  ],
+
+  "routes": [
+    { "handle": "filesystem" },
+    {
+      "src": "/.*",
+      "dest": "/index.html"
+    }
   ]
 }
