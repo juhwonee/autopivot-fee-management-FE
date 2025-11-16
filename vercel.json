@@ -6,15 +6,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://seongchan-spring.store/$1"
-    }
-  ],
-
-  "routes": [
-    { "handle": "filesystem" },
+      "destination": "https://seongchan-spring.store/api/$1"
+    },
     {
-      "src": "/.*",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
