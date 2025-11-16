@@ -5,44 +5,38 @@ import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import './DashboardPage.css';
 
+// API 통신 및 데이터 타입을 위한 인터페이스/타입 정의 (주석 처리)
+/*
+interface DashboardSummary {
+  paidCount: number;
+  unpaidCount: number;
+  totalAmount: number;
+  unpaidMembers: string[];
+}
+
+interface Activity {
+  id: number;
+  type: 'payment' | 'member' | 'notice';
+  message: string;
+  time: string;
+  icon: string;
+}
+
+interface DashboardData {
+  summary: DashboardSummary;
+  recentActivities: Activity[];
+}
+*/
+
 const DashboardPage = () => {
   const navigate = useNavigate();
-  const [userName, setUserName] = useState('회원');
   
-  // ✅ 대괄호 추가!
-  const [dashboardData] = useState({
-    summary: {
-      paidCount: 8,
-      unpaidCount: 2,
-      totalAmount: 300000,
-      unpaidMembers: ['박민수', '최수진']
-    },
-    recentActivities: [
-      {
-        id: 1,
-        type: 'payment',
-        message: '이영희님 회비 납부 완료',
-        time: '2024.11.05 오후 3시',
-        icon: '✅'
-      },
-      {
-        id: 2,
-        type: 'member',
-        message: '새 멤버 김영수님 등록됨',
-        time: '2024.11.04 오전 10시',
-        icon: '👤'
-      },
-      {
-        id: 3,
-        type: 'notice',
-        message: '11월 회비 납부 안내 공지',
-        time: '2024.11.01 오전 9시',
-        icon: '📢'
-      }
-    ]
-  });
+  // 1. 상태(State) 초기화: 초기값을 null 또는 빈 객체로 설정하여 데이터 로딩 상태를 관리합니다.
+  const [userName, setUserName] = useState('회원');
+  const [dashboardData, setDashboardData] = useState(null); // 초기 더미 데이터 제거
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
 
-  // 로그인 체크 및 사용자 이름 추출
+  // --- JWT 파싱 및 사용자 이름 설정 (이전과 동일) ---
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     
@@ -52,29 +46,70 @@ const DashboardPage = () => {
       return;
     }
 
-    // JWT 토큰에서 이름 추출
     try {
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-
       const decodedAscii = atob(base64);
       const utf8String = decodeURIComponent(
         Array.prototype.map.call(decodedAscii, (c) => {
           return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join('')
       );
-
       const payload = JSON.parse(utf8String);
       
       setUserName(payload.name || '회원');
-      console.log('로그인 정보 (복원):', payload);
     } catch (error) {
-      console.error('토큰 파싱/인코딩 실패::', error);
+      console.error('토큰 파싱/인코딩 실패:', error);
       setUserName('회원');
     }
   }, [navigate]);
+  // ---------------------------------------------------
 
+  // 2. API 통신 로직 추가: 대시보드 데이터를 백엔드에서 가져옵니다.
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoading(true);
+        
+        // ⭐ Spring API 엔드포인트로 변경 예정: 예시 URL입니다.
+        const response = await fetch('/api/dashboard', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('대시보드 데이터를 가져오는데 실패했습니다.');
+        }
+
+        const data = await response.json();
+        setDashboardData(data); // 가져온 실제 데이터로 상태 업데이트
+      } catch (error) {
+        console.error('데이터 로딩 오류:', error);
+        // 오류 발생 시 사용자에게 알림 또는 오류 상태 설정 가능
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // 토큰이 있을 때만 데이터 로드 실행
+    if (localStorage.getItem('accessToken')) {
+      fetchDashboardData();
+    }
+  }, []); // 빈 배열: 컴포넌트 마운트 시 한 번만 실행
+
+  // 3. 로딩 상태 처리
+  if (isLoading || !dashboardData) {
+    return (
+      <MainLayout>
+        <div className="loading-spinner">데이터를 불러오는 중입니다...</div>
+      </MainLayout>
+    );
+  }
+  
+  // --- 빠른 실행 메뉴 및 핸들러는 그대로 유지 ---
   const quickActions = [
+    // ... 기존 quickActions 데이터
     {
       id: 'fees',
       icon: '💰',
@@ -102,10 +137,12 @@ const DashboardPage = () => {
   ];
 
   const handleQuickAction = (path) => {
-    alert(`${path} 페이지로 이동합니다. (구현 예정)`);
+    navigate(path); // 실제로 이동하도록 수정하거나, alert 유지 가능
+    // alert(`${path} 페이지로 이동합니다. (구현 예정)`);
   };
 
   return (
+    // MainLayout에 전달하는 summaryData도 API에서 가져온 dashboardData.summary를 사용합니다.
     <MainLayout showSummary={true} summaryData={dashboardData.summary}>
       <div className="dashboard">
         {/* 환영 메시지 */}
@@ -115,7 +152,7 @@ const DashboardPage = () => {
           </h2>
         </div>
 
-        {/* 이번 달 요약 */}
+        {/* 이번 달 요약: API 데이터 사용 */}
         <Card className="dashboard__summary-card" padding="large">
           <div className="summary-card__header">
             <h3 className="summary-card__title">💰 이번 달 회비 현황</h3>
@@ -154,7 +191,7 @@ const DashboardPage = () => {
           </div>
         </Card>
 
-        {/* 빠른 실행 메뉴 */}
+        {/* 빠른 실행 메뉴 (데이터 변동 없음) */}
         <div className="dashboard__section">
           <h3 className="dashboard__section-title">🎯 빠른 실행 메뉴</h3>
           
@@ -181,7 +218,7 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* 최근 활동 내역 */}
+        {/* 최근 활동 내역: API 데이터 사용 */}
         <div className="dashboard__section">
           <h3 className="dashboard__section-title">📋 최근 활동 내역</h3>
           
