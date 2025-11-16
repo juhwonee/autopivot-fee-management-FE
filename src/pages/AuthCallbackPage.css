@@ -1,0 +1,80 @@
+.auth-callback-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+}
+
+.callback-container {
+  text-align: center;
+  color: white;
+  max-width: 400px;
+}
+
+.callback-spinner {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--spacing-xl);
+  border: 6px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.callback-title {
+  font-size: var(--font-2xl);
+  font-weight: 700;
+  margin-bottom: var(--spacing-md);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.callback-message {
+  font-size: var(--font-lg);
+  opacity: 0.95;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.95;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .callback-title {
+    font-size: var(--font-xl);
+  }
+
+  .callback-message {
+    font-size: var(--font-md);
+  }
+
+  .callback-spinner {
+    width: 60px;
+    height: 60px;
+  }
+}

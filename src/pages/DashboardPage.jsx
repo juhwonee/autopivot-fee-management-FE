@@ -5,38 +5,14 @@ import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import './DashboardPage.css';
 
-// API 통신 및 데이터 타입을 위한 인터페이스/타입 정의 (주석 처리)
-/*
-interface DashboardSummary {
-  paidCount: number;
-  unpaidCount: number;
-  totalAmount: number;
-  unpaidMembers: string[];
-}
-
-interface Activity {
-  id: number;
-  type: 'payment' | 'member' | 'notice';
-  message: string;
-  time: string;
-  icon: string;
-}
-
-interface DashboardData {
-  summary: DashboardSummary;
-  recentActivities: Activity[];
-}
-*/
-
 const DashboardPage = () => {
   const navigate = useNavigate();
   
-  // 1. 상태(State) 초기화: 초기값을 null 또는 빈 객체로 설정하여 데이터 로딩 상태를 관리합니다.
   const [userName, setUserName] = useState('회원');
-  const [dashboardData, setDashboardData] = useState(null); // 초기 더미 데이터 제거
-  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
+  const [dashboardData, setDashboardData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // --- JWT 파싱 및 사용자 이름 설정 (이전과 동일) ---
+  // JWT 파싱 및 사용자 이름 설정
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     
@@ -63,16 +39,24 @@ const DashboardPage = () => {
       setUserName('회원');
     }
   }, [navigate]);
-  // ---------------------------------------------------
 
-  // 2. API 통신 로직 추가: 대시보드 데이터를 백엔드에서 가져옵니다.
+  // API 통신: 대시보드 데이터를 백엔드에서 가져오기
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setIsLoading(true);
         
-        // ⭐ Spring API 엔드포인트로 변경 예정: 예시 URL입니다.
-        const response = await fetch('/api/dashboard', {
+        // 현재 선택된 그룹 ID 가져오기
+        const groupId = localStorage.getItem('currentGroupId');
+        
+        if (!groupId) {
+          // 그룹 ID가 없으면 그룹 선택 페이지로
+          navigate('/select-group');
+          return;
+        }
+        
+        // ⭐ 그룹 ID를 포함하여 API 호출
+        const response = await fetch(`https://seongchan-spring.store/api/dashboard?groupId=${groupId}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
           }
@@ -83,10 +67,12 @@ const DashboardPage = () => {
         }
 
         const data = await response.json();
-        setDashboardData(data); // 가져온 실제 데이터로 상태 업데이트
+        setDashboardData(data);
       } catch (error) {
         console.error('데이터 로딩 오류:', error);
-        // 오류 발생 시 사용자에게 알림 또는 오류 상태 설정 가능
+        alert('대시보드 데이터를 불러오는데 실패했습니다.');
+        // 에러 발생 시 그룹 선택 페이지로 이동
+        navigate('/select-group');
       } finally {
         setIsLoading(false);
       }
@@ -96,9 +82,9 @@ const DashboardPage = () => {
     if (localStorage.getItem('accessToken')) {
       fetchDashboardData();
     }
-  }, []); // 빈 배열: 컴포넌트 마운트 시 한 번만 실행
+  }, [navigate]);
 
-  // 3. 로딩 상태 처리
+  // 로딩 상태 처리
   if (isLoading || !dashboardData) {
     return (
       <MainLayout>
@@ -107,9 +93,7 @@ const DashboardPage = () => {
     );
   }
   
-  // --- 빠른 실행 메뉴 및 핸들러는 그대로 유지 ---
   const quickActions = [
-    // ... 기존 quickActions 데이터
     {
       id: 'fees',
       icon: '💰',
@@ -137,12 +121,10 @@ const DashboardPage = () => {
   ];
 
   const handleQuickAction = (path) => {
-    navigate(path); // 실제로 이동하도록 수정하거나, alert 유지 가능
-    // alert(`${path} 페이지로 이동합니다. (구현 예정)`);
+    navigate(path);
   };
 
   return (
-    // MainLayout에 전달하는 summaryData도 API에서 가져온 dashboardData.summary를 사용합니다.
     <MainLayout showSummary={true} summaryData={dashboardData.summary}>
       <div className="dashboard">
         {/* 환영 메시지 */}
@@ -152,7 +134,7 @@ const DashboardPage = () => {
           </h2>
         </div>
 
-        {/* 이번 달 요약: API 데이터 사용 */}
+        {/* 이번 달 요약 */}
         <Card className="dashboard__summary-card" padding="large">
           <div className="summary-card__header">
             <h3 className="summary-card__title">💰 이번 달 회비 현황</h3>
@@ -191,7 +173,7 @@ const DashboardPage = () => {
           </div>
         </Card>
 
-        {/* 빠른 실행 메뉴 (데이터 변동 없음) */}
+        {/* 빠른 실행 메뉴 */}
         <div className="dashboard__section">
           <h3 className="dashboard__section-title">🎯 빠른 실행 메뉴</h3>
           
@@ -218,7 +200,7 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* 최근 활동 내역: API 데이터 사용 */}
+        {/* 최근 활동 내역 */}
         <div className="dashboard__section">
           <h3 className="dashboard__section-title">📋 최근 활동 내역</h3>
           
