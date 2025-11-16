@@ -54,11 +54,22 @@ const DashboardPage = () => {
 
     // JWT 토큰에서 이름 추출
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+
+      const decodedAscii = atob(base64);
+      const utf8String = decodeURIComponent(
+        Array.prototype.map.call(decodedAscii, (c) => {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join('')
+      );
+
+      const payload = JSON.parse(utf8String);
+      
       setUserName(payload.name || '회원');
-      console.log('로그인 정보:', payload);
+      console.log('로그인 정보 (복원):', payload);
     } catch (error) {
-      console.error('토큰 파싱 실패:', error);
+      console.error('토큰 파싱/인코딩 실패::', error);
       setUserName('회원');
     }
   }, [navigate]);
