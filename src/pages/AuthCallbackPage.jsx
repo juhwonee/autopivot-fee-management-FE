@@ -34,7 +34,7 @@ const AuthCallbackPage = () => {
         // 2. 사용자의 그룹 정보 확인
         setStatusMessage('그룹 정보를 확인하는 중...');
         
-        const response = await fetch('https://seongchan-spring.store/api/user/groups', {
+        const response = await fetch('https://seongchan-spring.store/api/user/groups/my', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
