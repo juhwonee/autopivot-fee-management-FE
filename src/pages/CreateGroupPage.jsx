@@ -7,11 +7,11 @@ import './CreateGroupPage.css';
 const CreateGroupPage = () => {
   const navigate = useNavigate();
   
-  // 그룹 기본 정보
+  // 그룹 기본 정보 (백엔드 DTO와 동일하게)
   const [groupName, setGroupName] = useState('');
-  const [groupDescription, setGroupDescription] = useState('');
-  const [monthlyFee, setMonthlyFee] = useState('');
-  const [category, setCategory] = useState('');
+  const [description, setDescription] = useState('');
+  const [fee, setFee] = useState('');
+  const [groupCategory, setGroupCategory] = useState('');
   
   // 엑셀 파일 관련
   const [hasExcelFile, setHasExcelFile] = useState(null); // null, true, false
@@ -21,8 +21,8 @@ const CreateGroupPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1); // 1: 기본정보, 2: 멤버정보
 
-  // 카테고리 옵션
-  const categories = [
+  // 카테고리 옵션 (백엔드 enum과 동일하게)
+  const groupCategories = [
     { value: 'CLUB', label: '동아리' },
     { value: 'STUDY', label: '스터디' },
     { value: 'SOCIAL_GATHERING', label: '친목회' },
@@ -52,11 +52,11 @@ const CreateGroupPage = () => {
       alert('그룹명을 입력해주세요.');
       return false;
     }
-    if (!monthlyFee || monthlyFee <= 0) {
+    if (!fee || fee <= 0) {
       alert('월 회비 금액을 입력해주세요.');
       return false;
     }
-    if (!category) {
+    if (!groupCategory) {
       alert('그룹 카테고리를 선택해주세요.');
       return false;
     }
@@ -89,7 +89,7 @@ const CreateGroupPage = () => {
       
       const formData = new FormData();
       
-      // 그룹 기본 정보
+      // 그룹 기본 정보 (백엔드 DTO와 정확히 일치)
       const groupData = {
         groupName: groupName.trim(),
         description: description.trim(),
@@ -106,7 +106,7 @@ const CreateGroupPage = () => {
         formData.append('memberFile', excelFile);
       }
 
-      // ⭐ Spring API 엔드포인트
+      // Spring API 엔드포인트
       const response = await fetch('https://seongchan-spring.store/api/groups', {
         method: 'POST',
         headers: {
@@ -116,7 +116,8 @@ const CreateGroupPage = () => {
       });
 
       if (!response.ok) {
-        throw new Error('그룹 생성에 실패했습니다.');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || '그룹 생성에 실패했습니다.');
       }
 
       const result = await response.json();
@@ -124,14 +125,16 @@ const CreateGroupPage = () => {
       alert('그룹이 성공적으로 생성되었습니다!');
       
       // 생성된 그룹 ID를 localStorage에 저장 (선택사항)
-      localStorage.setItem('currentGroupId', result.Id);
+      if (result.id) {
+        localStorage.setItem('currentGroupId', result.id);
+      }
       
       // 대시보드로 이동
       navigate('/dashboard');
       
     } catch (error) {
       console.error('그룹 생성 오류:', error);
-      alert('그룹 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+      alert(error.message || '그룹 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
     } finally {
       setIsLoading(false);
     }
@@ -195,7 +198,7 @@ const CreateGroupPage = () => {
                       className="form-textarea"
                       placeholder="그룹에 대한 간단한 설명을 입력해주세요"
                       value={description}
-                      onChange={(e) => setGroupDescription(e.target.value)}
+                      onChange={(e) => setDescription(e.target.value)}
                       maxLength={200}
                       rows={4}
                     />
@@ -206,11 +209,11 @@ const CreateGroupPage = () => {
                   <div className="form-group">
                     <label className="form-label required">그룹 카테고리</label>
                     <div className="category-grid">
-                      {categories.map((cat) => (
+                      {groupCategories.map((cat) => (
                         <div
                           key={cat.value}
-                          className={`category-option ${category === cat.value ? 'selected' : ''}`}
-                          onClick={() => setCategory(cat.value)}
+                          className={`category-option ${groupCategory === cat.value ? 'selected' : ''}`}
+                          onClick={() => setGroupCategory(cat.value)}
                         >
                           {cat.label}
                         </div>
@@ -231,7 +234,7 @@ const CreateGroupPage = () => {
                         className="form-input"
                         placeholder="10000"
                         value={fee}
-                        onChange={(e) => setMonthlyFee(e.target.value)}
+                        onChange={(e) => setFee(e.target.value)}
                         min="0"
                         step="1000"
                       />
