@@ -51,6 +51,7 @@ const GroupSelectPage = () => {
         
         // ⭐ Spring API 엔드포인트
         const response = await fetch('https://seongchan-spring.store/api/user/groups', {
+          method: 'GET',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
           }
