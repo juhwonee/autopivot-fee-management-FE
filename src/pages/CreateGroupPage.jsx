@@ -240,22 +240,6 @@ const CreateGroupPage = () => {
                       <span className="input-unit">원</span>
                     </div>
                   </div>
-
-                  {/* 회비 납부일 */}
-                  <div className="form-group">
-                    <label className="form-label required">매월 회비 납부일</label>
-                    <select
-                      className="form-select"
-                      value={paymentDay}
-                      onChange={(e) => setPaymentDay(e.target.value)}
-                    >
-                      {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
-                        <option key={day} value={day}>
-                          매월 {day}일
-                        </option>
-                      ))}
-                    </select>
-                  </div>
                 </div>
               </Card>
 
