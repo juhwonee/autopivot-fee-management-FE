@@ -14,15 +14,29 @@ const DashboardPage = () => {
   const [lastUpdated, setLastUpdated] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  // ✅ JWT 토큰 검증 및 groupId 확인
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     
     if (!token) {
       alert('로그인이 필요합니다.');
-      navigate('/login');
+      navigate('/login', { replace: true });
       return;
     }
 
+    // ✅ currentGroupId 검증 강화
+    const currentGroupId = localStorage.getItem('currentGroupId');
+    
+    if (!currentGroupId || currentGroupId === 'undefined' || currentGroupId === 'null') {
+      console.log('⚠️ 그룹이 선택되지 않았습니다. GroupSelectPage로 이동합니다.');
+      alert('그룹을 먼저 선택해주세요.');
+      navigate('/select-group', { replace: true });
+      return;
+    }
+
+    console.log('✅ 현재 선택된 그룹 ID:', currentGroupId);
+
+    // JWT 토큰에서 사용자 이름 추출
     try {
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -35,12 +49,14 @@ const DashboardPage = () => {
       const payload = JSON.parse(utf8String);
       
       setUserName(payload.name || '회원');
+      console.log('✅ 사용자 이름:', payload.name);
     } catch (error) {
-      console.error('토큰 파싱 실패:', error);
+      console.error('❌ 토큰 파싱 실패:', error);
       setUserName('회원');
     }
   }, [navigate]);
 
+  // ✅ 대시보드 데이터 가져오기 (개선된 검증)
   const fetchDashboardData = useCallback(async (showLoading = true) => {
     try {
       if (showLoading) {
@@ -51,10 +67,15 @@ const DashboardPage = () => {
       
       const groupId = localStorage.getItem('currentGroupId');
       
-      if (!groupId) {
-        navigate('/select-group');
+      // ✅ groupId 검증 강화
+      if (!groupId || groupId === 'undefined' || groupId === 'null') {
+        console.error('❌ groupId가 유효하지 않습니다:', groupId);
+        alert('그룹을 먼저 선택해주세요.');
+        navigate('/select-group', { replace: true });
         return;
       }
+      
+      console.log('🔍 대시보드 API 요청:', `https://seongchan-spring.store/api/groups/${groupId}/dashboard`);
       
       const response = await fetch(
         `https://seongchan-spring.store/api/groups/${groupId}/dashboard`,
@@ -66,46 +87,69 @@ const DashboardPage = () => {
       );
 
       if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('그룹을 찾을 수 없습니다. 그룹을 다시 선택해주세요.');
+        }
+        if (response.status === 403) {
+          throw new Error('그룹에 접근할 권한이 없습니다.');
+        }
         throw new Error('대시보드 데이터를 가져오는데 실패했습니다.');
       }
 
       const data = await response.json();
-      console.log('대시보드 데이터:', data);  // ✅ 디버깅용
+      console.log('✅ 대시보드 데이터:', data);
       
       setDashboardData(data);
       setLastUpdated(new Date(data.lastUpdated));
       
     } catch (error) {
-      console.error('데이터 로딩 오류:', error);
-      alert('대시보드 데이터를 불러오는데 실패했습니다.');
-      navigate('/select-group');
+      console.error('❌ 데이터 로딩 오류:', error);
+      alert(error.message || '대시보드 데이터를 불러오는데 실패했습니다.');
+      navigate('/select-group', { replace: true });
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
     }
   }, [navigate]);
 
+  // ✅ 컴포넌트 마운트 시 데이터 로딩
   useEffect(() => {
-    if (localStorage.getItem('accessToken')) {
+    const token = localStorage.getItem('accessToken');
+    const groupId = localStorage.getItem('currentGroupId');
+    
+    if (token && groupId && groupId !== 'undefined' && groupId !== 'null') {
       fetchDashboardData(true);
     }
   }, [fetchDashboardData]);
 
+  // ✅ 1분마다 자동 새로고침
   useEffect(() => {
     const interval = setInterval(() => {
-      fetchDashboardData(false);
+      const groupId = localStorage.getItem('currentGroupId');
+      if (groupId && groupId !== 'undefined' && groupId !== 'null') {
+        fetchDashboardData(false);
+      }
     }, 60000);
 
     return () => clearInterval(interval);
   }, [fetchDashboardData]);
 
+  // ✅ 수동 새로고침
   const handleManualRefresh = async () => {
     const groupId = localStorage.getItem('currentGroupId');
+    
+    if (!groupId || groupId === 'undefined' || groupId === 'null') {
+      alert('그룹을 먼저 선택해주세요.');
+      navigate('/select-group');
+      return;
+    }
     
     try {
       setIsRefreshing(true);
       
-      // ✅ 백엔드 캐시 갱신 요청
+      console.log('🔄 백엔드 캐시 갱신 요청');
+      
+      // 백엔드 캐시 갱신 요청
       await fetch(
         `https://seongchan-spring.store/api/groups/${groupId}/dashboard/refresh`,
         {
@@ -116,30 +160,39 @@ const DashboardPage = () => {
         }
       );
       
+      // 데이터 다시 가져오기
       await fetchDashboardData(false);
       
+      console.log('✅ 새로고침 완료');
+      
     } catch (error) {
-      console.error('새로고침 오류:', error);
+      console.error('❌ 새로고침 오류:', error);
       alert('새로고침에 실패했습니다.');
     } finally {
       setIsRefreshing(false);
     }
   };
 
+  // 로딩 중
   if (isLoading || !dashboardData) {
     return (
       <MainLayout>
-        <div className="loading-spinner">데이터를 불러오는 중입니다...</div>
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>데이터를 불러오는 중입니다...</p>
+        </div>
       </MainLayout>
     );
   }
 
+  // 요약 데이터
   const summaryData = {
     paidCount: dashboardData.paidMembers,
     unpaidCount: dashboardData.unpaidMembers,
     totalAmount: dashboardData.totalAmount
   };
   
+  // 빠른 실행 메뉴
   const quickActions = [
     {
       id: 'fees',
@@ -171,6 +224,7 @@ const DashboardPage = () => {
     navigate(path);
   };
 
+  // 시간 포맷팅
   const formatTime = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -190,6 +244,7 @@ const DashboardPage = () => {
   return (
     <MainLayout showSummary={true} summaryData={summaryData}>
       <div className="dashboard">
+        {/* 대시보드 헤더 */}
         <div className="dashboard__header">
           <div>
             <h2 className="dashboard__greeting">
@@ -220,6 +275,7 @@ const DashboardPage = () => {
           </div>
         </div>
 
+        {/* 이번 달 회비 현황 */}
         <Card className="dashboard__summary-card" padding="large">
           <div className="summary-card__header">
             <h3 className="summary-card__title">💰 이번 달 회비 현황</h3>
@@ -270,6 +326,7 @@ const DashboardPage = () => {
           </div>
         </Card>
 
+        {/* 빠른 실행 메뉴 */}
         <div className="dashboard__section">
           <h3 className="dashboard__section-title">🎯 빠른 실행 메뉴</h3>
           
@@ -296,6 +353,7 @@ const DashboardPage = () => {
           </div>
         </div>
 
+        {/* 최근 입금 내역 */}
         <div className="dashboard__section">
           <h3 className="dashboard__section-title">💳 최근 입금 내역</h3>
           
@@ -331,6 +389,7 @@ const DashboardPage = () => {
           )}
         </div>
 
+        {/* 납부 진행률 */}
         <Card className="dashboard__progress-card" padding="large">
           <h3 className="progress-card__title">📊 납부 진행률</h3>
           <div className="progress-card__bar-container">
@@ -349,6 +408,7 @@ const DashboardPage = () => {
           </div>
         </Card>
 
+        {/* 챗봇 CTA */}
         <div className="dashboard__cta">
           <Button 
             variant="primary" 

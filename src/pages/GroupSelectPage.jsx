@@ -10,14 +10,17 @@ const GroupSelectPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userName, setUserName] = useState('회원');
 
+  // ✅ 그룹 선택 핸들러
   const handleSelectGroup = useCallback((groupId) => {
-    console.log('선택한 그룹 ID:', groupId);
-    localStorage.setItem('currentGroupId', groupId);
+    console.log('✅ 선택한 그룹 ID:', groupId);
+    localStorage.setItem('currentGroupId', String(groupId));
     navigate('/dashboard');
   }, [navigate]);
 
+  // ✅ JWT 토큰에서 사용자 이름 추출
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
+    
     if (!token) {
       alert('로그인이 필요합니다.');
       navigate('/login');
@@ -34,12 +37,16 @@ const GroupSelectPage = () => {
         }).join('')
       );
       const payload = JSON.parse(utf8String);
+      
       setUserName(payload.name || '회원');
+      console.log('✅ 사용자 이름:', payload.name);
     } catch (error) {
-      console.error('토큰 파싱 실패:', error);
+      console.error('❌ 토큰 파싱 실패:', error);
+      setUserName('회원');
     }
   }, [navigate]);
 
+  // ✅ 사용자의 그룹 목록 가져오기
   useEffect(() => {
     const fetchGroups = async () => {
       try {
@@ -57,17 +64,19 @@ const GroupSelectPage = () => {
         }
 
         const data = await response.json();
-        console.log('가져온 그룹 목록:', data);
+        console.log('✅ 가져온 그룹 목록:', data);
         
         setGroups(data);
         
+        // 그룹이 없으면 그룹 생성 페이지로 이동
         if (data.length === 0) {
           alert('아직 가입된 그룹이 없습니다. 그룹을 만들어주세요!');
           navigate('/create-group');
+          return;
         }
         
       } catch (error) {
-        console.error('그룹 목록 로딩 오류:', error);
+        console.error('❌ 그룹 목록 로딩 오류:', error);
         alert('그룹 목록을 불러오는데 실패했습니다.');
       } finally {
         setIsLoading(false);
@@ -77,11 +86,21 @@ const GroupSelectPage = () => {
     fetchGroups();
   }, [navigate]);
 
+  // ✅ 새 그룹 만들기
   const handleCreateNewGroup = () => {
-    console.log('새 그룹 만들기 버튼 클릭');
+    console.log('➕ 새 그룹 만들기 버튼 클릭');
     navigate('/create-group');
   };
 
+  // ✅ 로그아웃
+  const handleLogout = () => {
+    console.log('👋 로그아웃 버튼 클릭');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('currentGroupId');
+    navigate('/login');
+  };
+
+  // 카테고리별 아이콘
   const getCategoryIcon = (category) => {
     const icons = {
       'CLUB': '🎯',
@@ -93,6 +112,7 @@ const GroupSelectPage = () => {
     return icons[category] || '📌';
   };
 
+  // 카테고리별 배경 그라디언트
   const getCategoryColor = (category) => {
     const colors = {
       'CLUB': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -104,6 +124,7 @@ const GroupSelectPage = () => {
     return colors[category] || colors['OTHER'];
   };
 
+  // 카테고리 한글 이름
   const getCategoryLabel = (category) => {
     const labels = {
       'CLUB': '동아리',
@@ -115,6 +136,7 @@ const GroupSelectPage = () => {
     return labels[category] || '기타';
   };
 
+  // 로딩 중
   if (isLoading) {
     return (
       <div className="group-select-page">
@@ -129,6 +151,7 @@ const GroupSelectPage = () => {
   return (
     <div className="group-select-page">
       <div className="group-select-container">
+        {/* 헤더 */}
         <div className="group-select-header">
           <h1 className="group-select-title">
             환영합니다, {userName}님! 👋
@@ -140,6 +163,7 @@ const GroupSelectPage = () => {
           </p>
         </div>
 
+        {/* 그룹 카드 그리드 */}
         <div className="groups-grid">
           {groups.map((group) => (
             <Card
@@ -181,6 +205,7 @@ const GroupSelectPage = () => {
             </Card>
           ))}
 
+          {/* 새 그룹 만들기 카드 */}
           <Card
             className="group-card group-card--create"
             hover={true}
@@ -196,16 +221,12 @@ const GroupSelectPage = () => {
           </Card>
         </div>
 
+        {/* 로그아웃 버튼 */}
         <div className="group-select-footer">
           <Button
             variant="secondary"
             size="medium"
-            onClick={() => {
-              console.log('로그아웃 버튼 클릭');
-              localStorage.removeItem('accessToken');
-              localStorage.removeItem('currentGroupId');
-              navigate('/login');
-            }}
+            onClick={handleLogout}
           >
             로그아웃
           </Button>
