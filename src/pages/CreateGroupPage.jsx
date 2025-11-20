@@ -9,19 +9,19 @@ const CreateGroupPage = () => {
   
   // 그룹 기본 정보 (백엔드 DTO와 동일하게)
   const [groupName, setGroupName] = useState('');
+  const [accountName, setAccountName] = useState('');  // ✅ 추가!
   const [description, setDescription] = useState('');
   const [fee, setFee] = useState('');
   const [groupCategory, setGroupCategory] = useState('');
   
   // 엑셀 파일 관련
-  const [hasExcelFile, setHasExcelFile] = useState(null); // null, true, false
+  const [hasExcelFile, setHasExcelFile] = useState(null);
   const [excelFile, setExcelFile] = useState(null);
   const [fileName, setFileName] = useState('');
   
   const [isLoading, setIsLoading] = useState(false);
-  const [currentStep, setCurrentStep] = useState(1); // 1: 기본정보, 2: 멤버정보
+  const [currentStep, setCurrentStep] = useState(1);
 
-  // 카테고리 옵션 (백엔드 enum과 동일하게)
   const groupCategories = [
     { value: 'CLUB', label: '동아리' },
     { value: 'STUDY', label: '스터디' },
@@ -30,26 +30,40 @@ const CreateGroupPage = () => {
     { value: 'OTHER', label: '기타' }
   ];
 
-  // 엑셀 파일 선택 핸들러
+  // ✅ accountName 자동 생성 함수 추가
+  const generateAccountName = (name) => {
+    if (!name.trim()) return '';
+    return `${name.trim()} 모임 통장`;
+  };
+
+  // ✅ 그룹명 변경 시 통장 이름도 자동 생성
+  const handleGroupNameChange = (e) => {
+    const name = e.target.value;
+    setGroupName(name);
+    setAccountName(generateAccountName(name));
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // 파일 확장자 체크
       const fileExtension = file.name.split('.').pop().toLowerCase();
       if (!['xlsx', 'xls', 'csv'].includes(fileExtension)) {
         alert('엑셀 파일(.xlsx, .xls) 또는 CSV 파일만 업로드 가능합니다.');
         return;
       }
-      
       setExcelFile(file);
       setFileName(file.name);
     }
   };
 
-  // 1단계 검증
+  // 1단계 검증 (✅ accountName 추가)
   const validateStep1 = () => {
     if (!groupName.trim()) {
       alert('그룹명을 입력해주세요.');
+      return false;
+    }
+    if (!accountName.trim()) {
+      alert('통장 이름을 입력해주세요.');
       return false;
     }
     if (!fee || fee <= 0) {
@@ -63,14 +77,12 @@ const CreateGroupPage = () => {
     return true;
   };
 
-  // 다음 단계로
   const handleNextStep = () => {
     if (validateStep1()) {
       setCurrentStep(2);
     }
   };
 
-  // 그룹 생성 제출
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -89,9 +101,10 @@ const CreateGroupPage = () => {
       
       const formData = new FormData();
       
-      // 그룹 기본 정보 (백엔드 DTO와 정확히 일치)
+      // ✅ accountName 추가
       const groupData = {
         groupName: groupName.trim(),
+        accountName: accountName.trim(),  // ✅ 추가!
         description: description.trim(),
         fee: parseInt(fee),
         groupCategory
@@ -101,12 +114,10 @@ const CreateGroupPage = () => {
         type: 'application/json'
       }));
       
-      // 엑셀 파일이 있으면 추가
       if (hasExcelFile && excelFile) {
         formData.append('memberFile', excelFile);
       }
 
-      // Spring API 엔드포인트
       const response = await fetch('https://seongchan-spring.store/api/groups', {
         method: 'POST',
         headers: {
@@ -124,12 +135,11 @@ const CreateGroupPage = () => {
       
       alert('그룹이 성공적으로 생성되었습니다!');
       
-      // 생성된 그룹 ID를 localStorage에 저장 (선택사항)
-      if (result.id) {
-        localStorage.setItem('currentGroupId', result.id);
+      // ✅ groupId 필드명 확인 (백엔드에서 id로 올 수도 있음)
+      if (result.groupId || result.id) {
+        localStorage.setItem('currentGroupId', result.groupId || result.id);
       }
       
-      // 대시보드로 이동
       navigate('/dashboard');
       
     } catch (error) {
@@ -143,7 +153,6 @@ const CreateGroupPage = () => {
   return (
     <div className="create-group-page">
       <div className="create-group-container">
-        {/* 헤더 */}
         <div className="create-group-header">
           <h1 className="create-group-title">
             {currentStep === 1 ? '새로운 그룹 만들기' : '멤버 정보 추가'}
@@ -156,7 +165,6 @@ const CreateGroupPage = () => {
           </p>
         </div>
 
-        {/* 진행 단계 표시 */}
         <div className="progress-steps">
           <div className={`progress-step ${currentStep >= 1 ? 'active' : ''}`}>
             <div className="progress-step-number">1</div>
@@ -170,7 +178,6 @@ const CreateGroupPage = () => {
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Step 1: 기본 정보 입력 */}
           {currentStep === 1 && (
             <div className="form-step">
               <Card className="form-card" padding="large">
@@ -183,12 +190,28 @@ const CreateGroupPage = () => {
                     <input
                       type="text"
                       className="form-input"
-                      placeholder="예: 테니스 동호회, CS 스터디"
+                      placeholder="예: ICON, 테니스 동호회"
                       value={groupName}
-                      onChange={(e) => setGroupName(e.target.value)}
+                      onChange={handleGroupNameChange}  // ✅ 수정
                       maxLength={50}
                     />
                     <span className="form-hint">최대 50자</span>
+                  </div>
+
+                  {/* ✅ 통장 이름 추가 */}
+                  <div className="form-group">
+                    <label className="form-label required">통장 이름</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="예: ICON 모임 통장"
+                      value={accountName}
+                      onChange={(e) => setAccountName(e.target.value)}
+                      maxLength={100}
+                    />
+                    <span className="form-hint">
+                      💡 입금 알림에 표시되는 통장 이름을 입력하세요 (자동 입력됨)
+                    </span>
                   </div>
 
                   {/* 그룹 설명 */}
@@ -225,7 +248,6 @@ const CreateGroupPage = () => {
                 <div className="form-section">
                   <h3 className="form-section-title">💰 회비 정보</h3>
                   
-                  {/* 월 회비 */}
                   <div className="form-group">
                     <label className="form-label required">월 회비 금액</label>
                     <div className="input-with-unit">
@@ -258,7 +280,7 @@ const CreateGroupPage = () => {
             </div>
           )}
 
-          {/* Step 2: 멤버 정보 추가 */}
+          {/* Step 2는 동일 */}
           {currentStep === 2 && (
             <div className="form-step">
               <Card className="form-card" padding="large">
@@ -270,7 +292,6 @@ const CreateGroupPage = () => {
                     없어도 괜찮아요. 나중에 하나씩 추가할 수 있습니다.
                   </p>
 
-                  {/* 파일 유무 선택 */}
                   <div className="excel-choice">
                     <div
                       className={`choice-card ${hasExcelFile === true ? 'selected' : ''}`}
@@ -299,7 +320,6 @@ const CreateGroupPage = () => {
                     </div>
                   </div>
 
-                  {/* 엑셀 파일 업로드 영역 */}
                   {hasExcelFile === true && (
                     <div className="file-upload-section">
                       <div className="file-upload-info">
@@ -343,7 +363,6 @@ const CreateGroupPage = () => {
                     </div>
                   )}
 
-                  {/* 파일 없음 선택 시 안내 */}
                   {hasExcelFile === false && (
                     <div className="no-file-info">
                       <div className="info-icon">✨</div>
@@ -358,7 +377,6 @@ const CreateGroupPage = () => {
                 </div>
               </Card>
 
-              {/* 버튼 영역 */}
               <div className="form-actions">
                 <Button
                   type="button"

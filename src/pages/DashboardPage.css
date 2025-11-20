@@ -206,3 +206,185 @@
     font-size: 48px;
   }
 }
+.dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.dashboard__group-name {
+  font-size: var(--font-md);
+  color: var(--text-gray);
+  margin-top: var(--spacing-xs);
+}
+
+.dashboard__refresh {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--spacing-xs);
+}
+
+.dashboard__last-updated {
+  font-size: var(--font-sm);
+  color: var(--text-gray);
+}
+
+/* 요약 카드 - 납부율 및 금액 추가 */
+.summary-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.summary-card__payment-rate {
+  font-size: var(--font-sm);
+  opacity: 0.9;
+}
+
+.summary-card__payment-rate strong {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  margin-left: var(--spacing-xs);
+}
+
+.summary-card__stat-amount {
+  font-size: var(--font-sm);
+  opacity: 0.85;
+  margin-top: var(--spacing-xs);
+}
+
+/* 진행률 바 카드 */
+.dashboard__progress-card {
+  margin-top: var(--spacing-xl);
+}
+
+.progress-card__title {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: var(--spacing-md);
+}
+
+.progress-card__bar-container {
+  width: 100%;
+  height: 40px;
+  background-color: var(--bg-light);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress-card__bar {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  transition: width 0.5s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  position: relative;
+}
+
+.progress-card__bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.progress-card__bar-label {
+  color: white;
+  font-weight: 600;
+  font-size: var(--font-sm);
+  position: relative;
+  z-index: 1;
+}
+
+.progress-card__info {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--spacing-md);
+  font-size: var(--font-sm);
+  color: var(--text-gray);
+  font-weight: 500;
+}
+
+/* 빈 상태 */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-xl);
+}
+
+.empty-state__message {
+  color: var(--text-gray);
+  font-size: var(--font-md);
+  margin: 0;
+}
+
+/* 로딩 스피너 */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  font-size: var(--font-lg);
+  color: var(--text-gray);
+}
+
+/* 반응형 추가 */
+@media (max-width: 768px) {
+  .dashboard__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard__refresh {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .summary-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+
+  .summary-card__payment-rate {
+    align-self: flex-start;
+  }
+
+  .progress-card__bar-container {
+    height: 32px;
+  }
+
+  .progress-card__bar-label {
+    font-size: 12px;
+  }
+}
