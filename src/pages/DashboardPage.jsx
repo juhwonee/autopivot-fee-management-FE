@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Modal from '../components/common/Modal'; 
+import ChatBot from '../components/ChatBot';  // 🔥 추가!
 import './DashboardPage.css';
 
 // ✨ groupId 유효성 검증 유틸리티 함수
@@ -17,6 +18,9 @@ const DashboardPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // 🤖 챗봇 상태 추가
+  const [isChatBotOpen, setIsChatBotOpen] = useState(false);
 
   // 모달 상태 관리
   const [modalInfo, setModalInfo] = useState({
@@ -185,6 +189,20 @@ const DashboardPage = () => {
     }
   };
 
+  // 🤖 챗봇 열기
+  const handleOpenChatBot = () => {
+    const groupId = localStorage.getItem('currentGroupId');
+    
+    if (!isValidGroupId(groupId)) {
+      showModal('그룹 선택', '그룹을 먼저 선택해주세요.', () => {
+        navigate('/select-group');
+      });
+      return;
+    }
+    
+    setIsChatBotOpen(true);
+  };
+
   // 시간 포맷 함수
   const formatTime = (dateString) => {
     const date = new Date(dateString);
@@ -347,20 +365,10 @@ const DashboardPage = () => {
               </div>
             </div>
             
-            {/* AI 비서 버튼 */}
+            {/* 🤖 AI 비서 버튼 - 챗봇 열기 */}
             <button 
-              className="refresh-btn" 
-              style={{ 
-                width: '100%', 
-                justifyContent: 'center', 
-                marginTop: '20px', 
-                background: '#f1f5f9', 
-                border: 'none' 
-              }}
-              onClick={() => showModal(
-                '준비 중', 
-                '총총이는 열심히 개발 중이에요! 🤖'
-              )}
+              className="refresh-btn chatbot-trigger-btn" 
+              onClick={handleOpenChatBot}
             >
               🤖 AI 비서 총총이에게 물어보기
             </button>
@@ -400,6 +408,13 @@ const DashboardPage = () => {
 
         </div>
       </div>
+
+      {/* 🤖 챗봇 컴포넌트 */}
+      <ChatBot 
+        isOpen={isChatBotOpen}
+        onClose={() => setIsChatBotOpen(false)}
+        groupId={localStorage.getItem('currentGroupId')}
+      />
 
       {/* 모달 컴포넌트 */}
       <Modal 

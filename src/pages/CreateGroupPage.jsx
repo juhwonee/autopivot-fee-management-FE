@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Button from '../components/common/Button'; // 버튼은 유지 (스타일은 CSS로 제어 가능)
+import Button from '../components/common/Button';
 import './CreateGroupPage.css';
 
 const CreateGroupPage = () => {
@@ -20,6 +20,7 @@ const CreateGroupPage = () => {
   
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [createdGroupId, setCreatedGroupId] = useState(null); // 생성된 그룹 ID 저장
 
   const groupCategories = [
     { value: 'CLUB', label: '동아리' },
@@ -73,9 +74,104 @@ const CreateGroupPage = () => {
     return true;
   };
 
-  const handleNextStep = () => {
-    if (validateStep1()) {
+  // Step 1: 그룹 생성 (멤버 없이)
+  const handleCreateGroup = async () => {
+    if (!validateStep1()) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      
+      const groupData = {
+        groupName: groupName.trim(),
+        accountName: accountName.trim(),
+        description: description.trim(),
+        fee: parseInt(fee),
+        groupCategory
+      };
+
+      const response = await fetch('https://seongchan-spring.store/api/groups', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        },
+        body: JSON.stringify(groupData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || '그룹 생성에 실패했습니다.');
+      }
+
+      const result = await response.json();
+      const groupId = result.groupId || result.id;
+      
+      if (!groupId) {
+        throw new Error('그룹 ID를 받지 못했습니다.');
+      }
+
+      // 그룹 ID 저장
+      setCreatedGroupId(groupId);
+      localStorage.setItem('currentGroupId', groupId);
+      
+      // Step 2로 이동
       setCurrentStep(2);
+      
+    } catch (error) {
+      console.error('그룹 생성 오류:', error);
+      alert(error.message || '그룹 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Step 2: 멤버 추가 (선택적)
+  const handleAddMembers = async () => {
+    // 엑셀 파일이 없으면 바로 대시보드로
+    if (hasExcelFile === false || !excelFile) {
+      alert('그룹이 성공적으로 생성되었습니다!');
+      navigate('/dashboard');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      
+      const formData = new FormData();
+      formData.append('file', excelFile);
+
+      const response = await fetch(
+        `https://seongchan-spring.store/api/groups/${createdGroupId}/members/upload`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          },
+          body: formData
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || '멤버 추가에 실패했습니다.');
+      }
+
+      const result = await response.json();
+      
+      alert(`그룹이 생성되고 ${result.count || result.length || '여러'} 명의 멤버가 추가되었습니다!`);
+      navigate('/dashboard');
+      
+    } catch (error) {
+      console.error('멤버 추가 오류:', error);
+      // 멤버 추가 실패해도 그룹은 생성되었으므로
+      alert(
+        `그룹은 생성되었지만 멤버 추가 중 오류가 발생했습니다.\n${error.message}\n\n그룹 페이지에서 나중에 멤버를 추가할 수 있습니다.`
+      );
+      navigate('/dashboard');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -92,61 +188,12 @@ const CreateGroupPage = () => {
       return;
     }
 
-    try {
-      setIsLoading(true);
-      
-      const formData = new FormData();
-      
-      const groupData = {
-        groupName: groupName.trim(),
-        accountName: accountName.trim(),
-        description: description.trim(),
-        fee: parseInt(fee),
-        groupCategory
-      };
-      
-      formData.append('groupData', new Blob([JSON.stringify(groupData)], {
-        type: 'application/json'
-      }));
-      
-      if (hasExcelFile && excelFile) {
-        formData.append('memberFile', excelFile);
-      }
-
-      const response = await fetch('https://seongchan-spring.store/api/groups', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: formData
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || '그룹 생성에 실패했습니다.');
-      }
-
-      const result = await response.json();
-      
-      alert('그룹이 성공적으로 생성되었습니다!');
-      
-      if (result.groupId || result.id) {
-        localStorage.setItem('currentGroupId', result.groupId || result.id);
-      }
-      
-      navigate('/dashboard');
-      
-    } catch (error) {
-      console.error('그룹 생성 오류:', error);
-      alert(error.message || '그룹 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
-    } finally {
-      setIsLoading(false);
-    }
+    // Step 2에서는 멤버 추가만 수행
+    await handleAddMembers();
   };
 
   return (
     <div className="create-group-page">
-      {/* 유리 카드 컨테이너 시작 (이 안에 모든 내용이 들어갑니다) */}
       <div className="create-group-glass-panel">
         
         {/* 헤더 */}
@@ -176,6 +223,7 @@ const CreateGroupPage = () => {
         </div>
 
         <form onSubmit={handleSubmit}>
+          {/* Step 1: 그룹 기본 정보 */}
           {currentStep === 1 && (
             <div className="form-step">
               
@@ -204,7 +252,6 @@ const CreateGroupPage = () => {
                     value={accountName}
                     onChange={(e) => setAccountName(e.target.value)}
                     maxLength={100}
-                    readOnly={!accountName} // 자동 생성이므로 사용자가 수정 못하게 해도 좋지만, 일단 수정 가능하게 둠
                   />
                   <span className="form-hint">입금 확인 시 표시될 통장 이름입니다.</span>
                 </div>
@@ -263,18 +310,18 @@ const CreateGroupPage = () => {
                   type="button"
                   variant="primary"
                   size="large"
-                  onClick={handleNextStep}
+                  onClick={handleCreateGroup}
+                  disabled={isLoading}
                   fullWidth
-                  // 기존 Button 컴포넌트 스타일이 안 맞으면 style prop으로 강제 조정 가능
                   style={{ borderRadius: '16px', height: '54px', fontSize: '16px' }} 
                 >
-                  다음으로 계속하기
+                  {isLoading ? '그룹 생성 중...' : '다음으로 계속하기'}
                 </Button>
               </div>
             </div>
           )}
 
-          {/* Step 2 */}
+          {/* Step 2: 멤버 추가 */}
           {currentStep === 2 && (
             <div className="form-step">
               <div className="form-section">
@@ -293,7 +340,7 @@ const CreateGroupPage = () => {
                       setFileName('');
                     }}
                   >
-                    <span className="choice-icon"></span>
+                    <span className="choice-icon">📁</span>
                     <span className="choice-title">파일이 있어요</span>
                     <span className="choice-description">엑셀/CSV 업로드</span>
                   </div>
@@ -325,13 +372,13 @@ const CreateGroupPage = () => {
                       <label htmlFor="excel-file" className="file-upload-label">
                         {fileName ? (
                           <>
-                            <span className="choice-icon"></span>
+                            <span className="choice-icon">📄</span>
                             <p className="file-name">{fileName}</p>
                             <p className="file-hint">파일을 변경하려면 클릭하세요</p>
                           </>
                         ) : (
                           <>
-                            <span className="choice-icon"></span>
+                            <span className="choice-icon">📤</span>
                             <p className="file-upload-text">여기를 클릭해 파일을 업로드하세요</p>
                             <p className="file-hint">지원 형식: .xlsx, .xls, .csv</p>
                           </>
@@ -347,10 +394,17 @@ const CreateGroupPage = () => {
                   type="button"
                   variant="secondary"
                   size="large"
-                  onClick={() => setCurrentStep(1)}
+                  onClick={() => {
+                    // Step 1로 돌아갈 수 없음 (이미 그룹 생성됨)
+                    // 대신 바로 대시보드로
+                    if (window.confirm('이전 단계로 돌아갈 수 없습니다.\n멤버 추가를 건너뛰고 대시보드로 이동하시겠습니까?')) {
+                      navigate('/dashboard');
+                    }
+                  }}
                   style={{ flex: 1, borderRadius: '16px', height: '54px' }}
+                  disabled={isLoading}
                 >
-                  이전
+                  건너뛰기
                 </Button>
                 <Button
                   type="submit"
@@ -359,7 +413,7 @@ const CreateGroupPage = () => {
                   disabled={isLoading}
                   style={{ flex: 2, borderRadius: '16px', height: '54px' }}
                 >
-                  {isLoading ? '생성 중...' : '완료 및 그룹 생성'}
+                  {isLoading ? '멤버 추가 중...' : hasExcelFile ? '멤버 추가 완료' : '대시보드로 이동'}
                 </Button>
               </div>
             </div>
