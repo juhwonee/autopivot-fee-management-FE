@@ -1,6 +1,6 @@
-/* ChatBot.css */
+/* ChatBot.css - Toss Style Complete Fixed */
 
-/* 1. 폰트 설정 (토스 느낌의 Pretendard) */
+/* 1. 폰트 설정 (Pretendard) */
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
 
 * {
@@ -48,7 +48,7 @@
   height: 85vh;
   max-height: 800px;
   background: #ffffff;
-  border-radius: 28px; /* 둥근 모서리 */
+  border-radius: 28px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
@@ -94,7 +94,7 @@
 
 .chatbot-status {
   font-size: 13px;
-  color: #3182f6; /* Toss Blue */
+  color: #3182f6;
   font-weight: 600;
   margin-top: 2px;
 }
@@ -129,7 +129,6 @@
   gap: 20px;
 }
 
-/* 스크롤바 숨김 (깔끔하게) */
 .chatbot-messages::-webkit-scrollbar {
   width: 6px;
 }
@@ -175,20 +174,18 @@
 .message-bubble {
   padding: 14px 18px;
   border-radius: 20px;
-  font-size: 17px; /* 글씨 크기 확대! */
+  font-size: 17px;
   line-height: 1.5;
   word-break: break-word;
   position: relative;
 }
 
-/* 봇 말풍선 */
 .message-bot .message-bubble {
   background: #f2f4f6;
   color: #333d4b;
   border-top-left-radius: 4px;
 }
 
-/* 유저 말풍선 (토스 블루) */
 .message-user .message-bubble {
   background: #3182f6;
   color: #ffffff;
@@ -202,9 +199,10 @@
   margin: 0 4px;
 }
 
-/* 6. 추천 질문 (빠른 질문) - 가로 스크롤 칩 스타일 */
+/* 6. 추천 질문 (빠른 질문) - ★수정됨: 잘림 방지 적용 */
 .suggestions-container {
-  padding: 12px 24px 0; /* 입력창 바로 위 */
+  width: 100%;
+  padding-top: 12px; /* 좌우 패딩 제거, 상단만 유지 */
   background: #ffffff;
   border-top: 1px solid #f2f4f6;
 }
@@ -213,19 +211,24 @@
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding-bottom: 8px;
-  scrollbar-width: none; /* Firefox 스크롤바 숨김 */
+  
+  /* ★ 중요: 패딩을 스크롤 영역 내부로 이동시켜 끝부분이 잘리지 않게 함 */
+  padding: 0 24px 12px 24px; 
+  
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 }
+
 .suggestions-scroll-area::-webkit-scrollbar {
-  display: none; /* Chrome 스크롤바 숨김 */
+  display: none; /* Chrome/Safari */
 }
 
 .suggestion-chip {
-  flex: 0 0 auto;
+  flex: 0 0 auto; /* 줄바꿈 및 찌그러짐 방지 */
   padding: 10px 16px;
   background: #ffffff;
   border: 1px solid #e5e8eb;
-  border-radius: 20px; /* 알약 모양 */
+  border-radius: 20px;
   font-size: 15px;
   font-weight: 500;
   color: #4e5968;
@@ -234,6 +237,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
   box-shadow: 0 2px 6px rgba(0,0,0,0.03);
 }
 
@@ -307,7 +311,7 @@
   cursor: not-allowed;
 }
 
-/* 타이핑 인디케이터 (점 3개 애니메이션) */
+/* 타이핑 인디케이터 */
 .typing-indicator {
   padding: 16px 20px !important;
   display: flex;
