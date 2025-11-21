@@ -228,10 +228,10 @@ const DashboardPage = () => {
       path: '/members' 
     },
     { 
-      id: 'notices', 
+      id: 'fixGroup', 
       icon: '📢', 
-      title: '공지사항', 
-      desc: '새로운 소식', 
+      title: '그룹 정보', 
+      desc: '내 그룹 확인하기', 
       path: '/notices' 
     }
   ];
@@ -326,7 +326,7 @@ const DashboardPage = () => {
           
           {/* 상세 현황 패널 */}
           <div className="glass-panel">
-            <h3 className="panel-title">📊 상세 현황</h3>
+            <h3 className="panel-title">상세 현황</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               <div className="activity-item">
                 <div className="activity-icon">💵</div>
@@ -359,16 +359,16 @@ const DashboardPage = () => {
               }}
               onClick={() => showModal(
                 '준비 중', 
-                'AI 비서 기능은 열심히 개발 중이에요! 🤖'
+                '총총이는 열심히 개발 중이에요! 🤖'
               )}
             >
-              🤖 AI 비서에게 물어보기
+              🤖 AI 비서 총총이에게 물어보기
             </button>
           </div>
 
           {/* 최근 입금 내역 패널 */}
           <div className="glass-panel">
-            <h3 className="panel-title">💳 최근 입금 내역</h3>
+            <h3 className="panel-title">최근 입금 내역</h3>
             
             {dashboardData.recentPayments && dashboardData.recentPayments.length > 0 ? (
               <div className="activity-list">
