@@ -93,7 +93,7 @@
 }
 
 .login-mascot-img {
-  height: 150px; /* 캐릭터 크기 */
+  height: 250px; /* 캐릭터 크기 */
   width: auto;
   object-fit: contain;
   animation: floatMascot 3s ease-in-out infinite alternate; /* 둥둥 떠다니는 효과 */
@@ -105,11 +105,17 @@
 }
 
 .login-title {
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--text-main);
-  margin-bottom: 0.5rem;
-  letter-spacing: -0.5px;
+  font-family: 'Jua', sans-serif;
+  font-size: 48px;
+  font-weight: 400;
+  background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 2px;
+  margin-bottom: 0.75rem;
+  filter: drop-shadow(0 4px 0px #bfdbfe);
+  transform: perspective(100px) rotateX(5deg);
 }
 
 .login-subtitle {
