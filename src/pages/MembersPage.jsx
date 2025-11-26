@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './MembersPage.css';
 
@@ -25,34 +25,9 @@ function MembersPage() {
     studentId: ''
   });
 
-  useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    const groupId = localStorage.getItem('currentGroupId');
-    const currentGroup = localStorage.getItem('currentGroup');
-
-    if (!token) {
-      navigate('/login', { replace: true });
-      return;
-    }
-
-    if (!isValidGroupId(groupId)) {
-      navigate('/select-group', { replace: true });
-      return;
-    }
-
-    if (currentGroup) {
-      try {
-        const group = JSON.parse(currentGroup);
-        setGroupName(group.groupName || '');
-      } catch (e) {
-        console.error('그룹 정보 파싱 실패:', e);
-      }
-    }
-
-    fetchMembers();
-  }, [navigate]);
-
-  const fetchMembers = async () => {
+  // fetchMembers를 useCallback으로 감싸고 useEffect 위로 올림
+  // 이렇게 하면 컴포넌트가 리렌더링되어도 함수 객체가 변경되지 않아 무한 루프를 방지합니다.
+  const fetchMembers = useCallback(async () => {
     const groupId = localStorage.getItem('currentGroupId');
     const token = localStorage.getItem('accessToken');
 
@@ -79,7 +54,34 @@ function MembersPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    const groupId = localStorage.getItem('currentGroupId');
+    const currentGroup = localStorage.getItem('currentGroup');
+
+    if (!token) {
+      navigate('/login', { replace: true });
+      return;
+    }
+
+    if (!isValidGroupId(groupId)) {
+      navigate('/select-group', { replace: true });
+      return;
+    }
+
+    if (currentGroup) {
+      try {
+        const group = JSON.parse(currentGroup);
+        setGroupName(group.groupName || '');
+      } catch (e) {
+        console.error('그룹 정보 파싱 실패:', e);
+      }
+    }
+
+    fetchMembers();
+  }, [navigate, fetchMembers]); // fetchMembers를 의존성 배열에 포함
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
