@@ -1,3 +1,9 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   🎯 AutoFeeBot Dashboard - Premium Finance UI
+   Design Direction: Modern Fintech + Clean Glassmorphism
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* 🎨 Design Tokens */
 :root {
   /* Primary Colors - Ocean Blue Gradient */
   --primary-50: #eff6ff;
@@ -135,15 +141,15 @@ body {
 
 .header-greeting h2 {
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
   color: var(--slate-800);
-  margin: 0 0 6px 0;
+  margin: 0 0 8px 0;
   letter-spacing: -0.5px;
 }
 
 .header-greeting p {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--slate-500);
   font-weight: 500;
   display: flex;
@@ -157,9 +163,9 @@ body {
   align-items: center;
   background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
   color: white;
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: var(--radius-full);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
@@ -176,13 +182,13 @@ body {
 .refresh-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 18px;
+  gap: 8px;
+  padding: 12px 20px;
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-full);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--slate-600);
   cursor: pointer;
@@ -216,7 +222,7 @@ body {
 }
 
 .last-updated {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--slate-400);
   font-weight: 500;
 }
@@ -273,9 +279,9 @@ body {
 }
 
 .hero-title {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
-  opacity: 0.85;
+  opacity: 0.9;
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
@@ -287,7 +293,7 @@ body {
 
 .payment-rate-big {
   font-family: var(--font-display);
-  font-size: 56px;
+  font-size: 64px;
   font-weight: 800;
   line-height: 1;
   letter-spacing: -2px;
@@ -298,7 +304,7 @@ body {
 /* Progress Bar */
 .progress-container {
   width: 100%;
-  height: 10px;
+  height: 12px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-full);
   overflow: hidden;
@@ -350,7 +356,7 @@ body {
   border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   transition: all 0.2s ease;
 }
 
@@ -360,15 +366,15 @@ body {
 }
 
 .stat-pill label {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
-  opacity: 0.8;
+  opacity: 0.85;
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
 
 .stat-pill span {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.5px;
 }
@@ -395,39 +401,22 @@ body {
   justify-content: center;
   gap: var(--space-md);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s ease;
   box-shadow: var(--glass-shadow);
   position: relative;
   overflow: hidden;
   min-height: 160px;
 }
 
-.action-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--primary-400), var(--accent-400));
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
 .action-card:hover {
-  transform: translateY(-6px);
-  background: white;
-  box-shadow: 
-    0 20px 40px rgba(59, 130, 246, 0.12),
-    0 0 0 1px rgba(59, 130, 246, 0.1);
-}
-
-.action-card:hover::before {
-  opacity: 1;
+  background: rgba(255, 255, 255, 0.85);
+  border-color: var(--primary-200);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(59, 130, 246, 0.1);
 }
 
 .action-card:active {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 
 .action-icon {
@@ -439,32 +428,30 @@ body {
   background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
   border-radius: var(--radius-lg);
   color: var(--primary-600);
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 
 .action-card:hover .action-icon {
-  background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
   color: var(--primary-700);
-  transform: scale(1.08);
 }
 
 .action-text {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .action-title {
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--slate-800);
   letter-spacing: -0.3px;
 }
 
 .action-desc {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--slate-500);
   font-weight: 500;
 }
@@ -492,7 +479,7 @@ body {
 
 .panel-title {
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--slate-800);
   margin: 0 0 var(--space-lg) 0;
@@ -564,9 +551,9 @@ body {
 }
 
 .activity-msg {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--slate-700);
-  margin: 0 0 2px 0;
+  margin: 0 0 4px 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -578,7 +565,7 @@ body {
 }
 
 .activity-time {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--slate-400);
   font-weight: 500;
 }
@@ -587,7 +574,7 @@ body {
 .activity-item > div:last-child {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 15px;
+  font-size: 17px;
   color: var(--primary-600) !important;
   white-space: nowrap;
 }
@@ -601,7 +588,7 @@ body {
 
 .empty-state p {
   margin: 0;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -653,18 +640,18 @@ body {
 .status-info {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .status-label {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--slate-500);
   font-weight: 500;
 }
 
 .status-value {
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--slate-800);
 }
@@ -673,7 +660,7 @@ body {
 .activity-amount {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 15px;
+  font-size: 17px;
   color: var(--primary-600);
   white-space: nowrap;
 }
@@ -691,15 +678,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   margin-top: auto;
   background: linear-gradient(135deg, var(--primary-600), #0ea5e9);
   border: none;
   border-radius: var(--radius-lg);
   color: white;
   font-weight: 600;
-  font-size: 14px;
-  padding: 14px 20px;
+  font-size: 16px;
+  padding: 16px 24px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -764,7 +751,7 @@ body {
 
 .loading-container p {
   margin: 0;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
 }
 
@@ -811,7 +798,7 @@ body {
 
 .modal-title {
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--slate-800);
   margin: 0 0 var(--space-sm) 0;
@@ -825,11 +812,11 @@ body {
 
 .btn-cancel {
   flex: 1;
-  padding: 14px 20px;
+  padding: 16px 24px;
   border: 1px solid var(--slate-200);
   background: white;
   border-radius: var(--radius-md);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--slate-600);
   cursor: pointer;
@@ -843,11 +830,11 @@ body {
 
 .btn-submit {
   flex: 1;
-  padding: 14px 20px;
+  padding: 16px 24px;
   border: none;
   background: var(--hero-gradient);
   border-radius: var(--radius-md);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: white;
   cursor: pointer;
@@ -865,13 +852,13 @@ body {
 }
 
 .delete-modal__icon {
-  font-size: 52px;
+  font-size: 56px;
   margin-bottom: var(--space-md);
 }
 
 .delete-modal__message {
   color: var(--slate-700);
-  font-size: 16px;
+  font-size: 18px;
   margin: 0 0 var(--space-xs) 0;
 }
 
@@ -881,18 +868,18 @@ body {
 
 .delete-modal__warning {
   color: var(--slate-500);
-  font-size: 14px;
+  font-size: 15px;
   margin: 0 0 var(--space-lg) 0;
   line-height: 1.6;
 }
 
 .btn-delete {
   flex: 1;
-  padding: 14px 20px;
+  padding: 16px 24px;
   border: none;
   background: linear-gradient(135deg, #ef4444, #dc2626);
   border-radius: var(--radius-md);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: white;
   cursor: pointer;
@@ -940,6 +927,10 @@ body {
     gap: var(--space-md);
   }
   
+  .header-greeting h2 {
+    font-size: 28px;
+  }
+  
   .refresh-container {
     align-items: flex-start;
   }
@@ -949,7 +940,7 @@ body {
   }
   
   .payment-rate-big {
-    font-size: 44px;
+    font-size: 52px;
   }
   
   .hero-stats-row {
@@ -962,6 +953,10 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: var(--space-md);
+  }
+  
+  .stat-pill span {
+    font-size: 22px;
   }
   
   .quick-actions-grid {
@@ -980,11 +975,11 @@ body {
   }
   
   .action-title {
-    font-size: 14px;
+    font-size: 16px;
   }
   
   .action-desc {
-    font-size: 12px;
+    font-size: 13px;
   }
   
   .dashboard-bottom-grid {
@@ -998,11 +993,11 @@ body {
 
 @media (max-width: 480px) {
   .header-greeting h2 {
-    font-size: 24px;
+    font-size: 26px;
   }
   
   .payment-rate-big {
-    font-size: 38px;
+    font-size: 44px;
   }
   
   .quick-actions-grid {
@@ -1026,10 +1021,10 @@ body {
   }
   
   .action-title {
-    font-size: 13px;
+    font-size: 14px;
   }
   
   .action-desc {
-    font-size: 11px;
+    font-size: 12px;
   }
 }

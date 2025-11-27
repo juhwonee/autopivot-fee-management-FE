@@ -376,7 +376,7 @@ const GroupSettingsPage = () => {
               onClick={() => setShowDeleteModal(true)}
               disabled={isDeleting}
             >
-              {isDeleting ? '삭제 중...' : '🗑️ 그룹 삭제하기'}
+              {isDeleting ? '삭제 중...' : '그룹 삭제하기'}
             </button>
           </div>
 
