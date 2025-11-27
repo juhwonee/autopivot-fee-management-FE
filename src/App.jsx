@@ -8,6 +8,7 @@ import CreateGroupPage from './pages/CreateGroupPage';
 import DashboardPage from './pages/DashboardPage';
 import MembersPage from './pages/MembersPage';
 import GroupSettingsPage from './pages/GroupSettingsPage';
+import FeesPage from './pages/FeesPage';
 
 // Protected Route 컴포넌트 - 로그인 필요
 const ProtectedRoute = ({ children }) => {
@@ -110,6 +111,15 @@ function App() {
           element={
             <DashboardProtectedRoute>
               <GroupSettingsPage />
+            </DashboardProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/fees" 
+          element={
+            <DashboardProtectedRoute>
+              <FeesPage />
             </DashboardProtectedRoute>
           } 
         />
