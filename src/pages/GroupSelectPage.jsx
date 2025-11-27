@@ -11,7 +11,7 @@ const GroupSelectPage = () => {
   const [userName, setUserName] = useState('회원');
 
   // ✅ 그룹 선택 핸들러
-  const handleSelectGroup = useCallback((groupId) => {
+  const handleSelectGroup = useCallback((group) => {
     console.log('✅ 선택한 그룹 ID:', groupId);
     localStorage.setItem('currentGroupId', String(groupId));
     localStorage.setItem('currentGroup', JSON.stringify(group));
@@ -168,7 +168,7 @@ const GroupSelectPage = () => {
             <Card
               key={group.groupId}
               className="group-card"
-              hover={true}
+              hover={true}            
               onClick={() => handleSelectGroup(group)}
             >
               {/* 카드 상단: 카테고리 색상 배경 */}
