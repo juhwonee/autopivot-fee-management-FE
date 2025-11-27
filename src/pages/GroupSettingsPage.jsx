@@ -380,8 +380,8 @@ const GroupSettingsPage = () => {
                   placeholder="0"
                   value={fee}
                   onChange={(e) => setFee(e.target.value)}
-                  min="0"
-                  step="1000"
+                  min="1"
+                  step="any"
                 />
                 <span className="settings-input-unit">원</span>
               </div>
