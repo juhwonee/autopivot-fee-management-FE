@@ -1,12 +1,13 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import LoginPage from './pages/LoginPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
 import GroupSelectPage from './pages/GroupSelectPage';
 import CreateGroupPage from './pages/CreateGroupPage';
 import DashboardPage from './pages/DashboardPage';
 import MembersPage from './pages/MembersPage';
-import GroupSettingsPage from './pages/GroupSettingsPage'; // 👈 추가
+import GroupSettingsPage from './pages/GroupSettingsPage';
 
 // Protected Route 컴포넌트 - 로그인 필요
 const ProtectedRoute = ({ children }) => {
@@ -38,6 +39,29 @@ const DashboardProtectedRoute = ({ children }) => {
 function App() {
   return (
     <BrowserRouter>
+      <Toaster 
+        position="top-center"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+          success: {
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
       <Routes>
         {/* 공개 라우트 */}
         <Route path="/" element={<Navigate to="/login" replace />} />
@@ -81,7 +105,6 @@ function App() {
           } 
         />
 
-        {/* 👈 그룹 설정 페이지 추가 */}
         <Route 
           path="/group-settings" 
           element={

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import './MembersPage.css';
 
 // groupId 유효성 검증
@@ -13,6 +14,8 @@ function MembersPage() {
   const [uploading, setUploading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingMember, setDeletingMember] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [groupName, setGroupName] = useState('');
   
@@ -50,11 +53,12 @@ function MembersPage() {
         const data = await response.json();
         setMembers(data);
       } else if (response.status === 401) {
-        alert('로그인이 만료되었습니다.');
+        toast.error('로그인이 만료되었습니다.');
         navigate('/login', { replace: true });
       }
     } catch (error) {
       console.error('멤버 목록 조회 실패:', error);
+      toast.error('멤버 목록을 불러오는데 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -91,12 +95,13 @@ function MembersPage() {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
+      toast.success(`${selectedFile.name} 파일이 선택되었습니다.`);
     }
   };
 
   const handleUpload = async () => {
     if (!file) {
-      alert('파일을 먼저 선택해주세요!');
+      toast.error('파일을 먼저 선택해주세요!');
       return;
     }
 
@@ -104,6 +109,7 @@ function MembersPage() {
     const token = localStorage.getItem('accessToken');
 
     setUploading(true);
+    const loadingToast = toast.loading('파일 업로드 중...');
 
     const formData = new FormData();
     formData.append('file', file);
@@ -123,18 +129,24 @@ function MembersPage() {
       if (response.ok) {
         const data = await response.json();
         await fetchMembers();
-        alert(`${data.count || '멤버'}명이 업로드되었습니다!`);
+        toast.success(`${data.count || '멤버'}명이 업로드되었습니다!`, {
+          id: loadingToast,
+        });
         setFile(null);
         
         const fileInput = document.getElementById('file-input');
         if (fileInput) fileInput.value = '';
       } else {
         const error = await response.json();
-        alert('업로드 실패: ' + (error.message || '서버 오류'));
+        toast.error('업로드 실패: ' + (error.message || '서버 오류'), {
+          id: loadingToast,
+        });
       }
     } catch (error) {
       console.error('업로드 에러:', error);
-      alert('서버 연결 실패!');
+      toast.error('서버 연결 실패!', {
+        id: loadingToast,
+      });
     } finally {
       setUploading(false);
     }
@@ -142,12 +154,14 @@ function MembersPage() {
 
   const handleAddMember = async () => {
     if (!newMember.name) {
-      alert('이름은 필수입니다!');
+      toast.error('이름은 필수입니다!');
       return;
     }
 
     const groupId = localStorage.getItem('currentGroupId');
     const token = localStorage.getItem('accessToken');
+
+    const loadingToast = toast.loading('멤버 추가 중...');
 
     try {
       const response = await fetch(
@@ -170,14 +184,20 @@ function MembersPage() {
         await fetchMembers();
         setShowAddModal(false);
         setNewMember({ name: '', phone: '', email: '' });
-        alert('멤버가 추가되었습니다!');
+        toast.success('멤버가 추가되었습니다!', {
+          id: loadingToast,
+        });
       } else {
         const error = await response.json();
-        alert('추가 실패: ' + (error.message || '서버 오류'));
+        toast.error('추가 실패: ' + (error.message || '서버 오류'), {
+          id: loadingToast,
+        });
       }
     } catch (error) {
       console.error('멤버 추가 실패:', error);
-      alert('서버 연결 실패!');
+      toast.error('서버 연결 실패!', {
+        id: loadingToast,
+      });
     }
   };
 
@@ -195,12 +215,14 @@ function MembersPage() {
   // 멤버 수정
   const handleEditMember = async () => {
     if (!editingMember.name) {
-      alert('이름은 필수입니다!');
+      toast.error('이름은 필수입니다!');
       return;
     }
 
     const groupId = localStorage.getItem('currentGroupId');
     const token = localStorage.getItem('accessToken');
+
+    const loadingToast = toast.loading('수정 중...');
 
     try {
       const response = await fetch(
@@ -223,29 +245,41 @@ function MembersPage() {
         await fetchMembers();
         setShowEditModal(false);
         setEditingMember({ id: null, name: '', phone: '', email: '' });
-        alert('멤버 정보가 수정되었습니다!');
+        toast.success('멤버 정보가 수정되었습니다!', {
+          id: loadingToast,
+        });
       } else {
         const error = await response.json();
-        alert('수정 실패: ' + (error.message || '서버 오류'));
+        toast.error('수정 실패: ' + (error.message || '서버 오류'), {
+          id: loadingToast,
+        });
       }
     } catch (error) {
       console.error('멤버 수정 실패:', error);
-      alert('서버 연결 실패!');
+      toast.error('서버 연결 실패!', {
+        id: loadingToast,
+      });
     }
   };
 
+  // 삭제 모달 열기
+  const handleOpenDeleteModal = (member) => {
+    setDeletingMember(member);
+    setShowDeleteModal(true);
+  };
+
   // 멤버 삭제
-  const handleDeleteMember = async (memberId, memberName) => {
-    if (!window.confirm(`정말 "${memberName}" 멤버를 삭제하시겠습니까?`)) {
-      return;
-    }
+  const handleDeleteMember = async () => {
+    if (!deletingMember) return;
 
     const groupId = localStorage.getItem('currentGroupId');
     const token = localStorage.getItem('accessToken');
 
+    const loadingToast = toast.loading('삭제 중...');
+
     try {
       const response = await fetch(
-        `https://seongchan-spring.store/api/groups/${groupId}/members/${memberId}`,
+        `https://seongchan-spring.store/api/groups/${groupId}/members/${deletingMember.id}`,
         {
           method: 'DELETE',
           headers: {
@@ -256,14 +290,23 @@ function MembersPage() {
 
       if (response.ok) {
         await fetchMembers();
-        alert('멤버가 삭제되었습니다!');
+        toast.success('멤버가 삭제되었습니다!', {
+          id: loadingToast,
+        });
       } else {
         const error = await response.json();
-        alert('삭제 실패: ' + (error.message || '서버 오류'));
+        toast.error('삭제 실패: ' + (error.message || '서버 오류'), {
+          id: loadingToast,
+        });
       }
     } catch (error) {
       console.error('멤버 삭제 실패:', error);
-      alert('서버 연결 실패!');
+      toast.error('서버 연결 실패!', {
+        id: loadingToast,
+      });
+    } finally {
+      setShowDeleteModal(false);
+      setDeletingMember(null);
     }
   };
 
@@ -339,7 +382,7 @@ function MembersPage() {
                           </button>
                           <button 
                             className="action-btn delete-btn"
-                            onClick={() => handleDeleteMember(member.id, member.name)}
+                            onClick={() => handleOpenDeleteModal(member)}
                             title="삭제"
                           >
                             🗑️
@@ -454,6 +497,24 @@ function MembersPage() {
             <div className="modal-buttons">
               <button className="btn-cancel" onClick={() => setShowEditModal(false)}>취소</button>
               <button className="btn-submit" onClick={handleEditMember}>수정하기</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 삭제 확인 모달 */}
+      {showDeleteModal && (
+        <div className="modal-overlay" onClick={() => setShowDeleteModal(false)}>
+          <div className="modal-content delete-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="delete-modal__icon">⚠️</div>
+            <h3 className="modal-title">멤버 삭제</h3>
+            <p className="delete-modal__message">
+              정말 <strong>"{deletingMember?.name}"</strong> 멤버를 삭제하시겠습니까?
+            </p>
+            <p className="delete-modal__warning">이 작업은 되돌릴 수 없습니다.</p>
+            <div className="modal-buttons">
+              <button className="btn-cancel" onClick={() => setShowDeleteModal(false)}>취소</button>
+              <button className="btn-delete" onClick={handleDeleteMember}>삭제하기</button>
             </div>
           </div>
         </div>
