@@ -356,14 +356,6 @@ function MembersPage() {
             ) : (
               <div className="member-table-wrapper">
                 <table className="member-table">
-                  {/* colgroup으로 컬럼 비율 설정 */}
-                  <colgroup>
-                    <col style={{ width: '8%' }} />   {/* # */}
-                    <col style={{ width: '18%' }} />  {/* 이름 */}
-                    <col style={{ width: '30%' }} />  {/* 이메일 */}
-                    <col style={{ width: '24%' }} />  {/* 전화번호 */}
-                    <col style={{ width: '20%' }} />  {/* 관리 */}
-                  </colgroup>
                   <thead>
                     <tr>
                       <th>#</th>

@@ -240,27 +240,22 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   📊 테이블 스타일 (수정됨 - 균등한 컬럼 비율 및 구분선 문제 해결)
+   📊 테이블 스타일 (수정됨 - 세로 구분선 추가)
    ═══════════════════════════════════════════════════════════════════════════ */
 .member-table-wrapper {
   overflow-x: auto;
   border-radius: 16px;
   background: white;
+  border: 1px solid #e2e8f0;
 }
 
 .member-table {
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
-  min-width: 600px; /* 최소 너비 설정으로 모바일에서도 가로 스크롤 */
+  min-width: 600px;
+  table-layout: fixed; /* 고정 레이아웃 */
 }
-
-/* colgroup으로 컬럼 비율 설정 - 더 균등하게 */
-.member-table colgroup col:nth-child(1) { width: 8%; }   /* # */
-.member-table colgroup col:nth-child(2) { width: 18%; }  /* 이름 */
-.member-table colgroup col:nth-child(3) { width: 30%; }  /* 이메일 */
-.member-table colgroup col:nth-child(4) { width: 24%; }  /* 전화번호 */
-.member-table colgroup col:nth-child(5) { width: 20%; }  /* 관리 */
 
 .member-table thead tr {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
@@ -275,17 +270,47 @@
   letter-spacing: 0.5px;
   text-align: left;
   border-bottom: 2px solid #e2e8f0;
+  border-right: 1px solid #e9ecef; /* 세로 구분선 추가 */
   vertical-align: middle;
   white-space: nowrap;
 }
 
-.member-table th:first-child {
-  border-radius: 16px 0 0 0;
+/* 첫번째 컬럼 너비 */
+.member-table th:nth-child(1),
+.member-table td:nth-child(1) {
+  width: 60px;
+  text-align: center;
 }
 
-.member-table th:last-child {
+/* 이름 컬럼 */
+.member-table th:nth-child(2),
+.member-table td:nth-child(2) {
+  width: 120px;
+}
+
+/* 이메일 컬럼 */
+.member-table th:nth-child(3),
+.member-table td:nth-child(3) {
+  width: auto;
+}
+
+/* 전화번호 컬럼 */
+.member-table th:nth-child(4),
+.member-table td:nth-child(4) {
+  width: 150px;
+}
+
+/* 관리 컬럼 */
+.member-table th:nth-child(5),
+.member-table td:nth-child(5) {
+  width: 120px;
   text-align: center;
-  border-radius: 0 16px 0 0;
+}
+
+/* 마지막 컬럼은 오른쪽 border 없음 */
+.member-table th:last-child {
+  border-right: none;
+  text-align: center;
 }
 
 .member-table tbody tr {
@@ -301,21 +326,20 @@
   font-size: 14px;
   color: var(--text-main);
   border-bottom: 1px solid #e9ecef;
+  border-right: 1px solid #e9ecef; /* 세로 구분선 추가 */
   vertical-align: middle;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* 마지막 행 하단 라운드 처리 */
-.member-table tbody tr:last-child td:first-child {
-  border-radius: 0 0 0 16px;
+/* 마지막 컬럼은 오른쪽 border 없음 */
+.member-table td:last-child {
+  border-right: none;
+  text-align: center;
 }
 
-.member-table tbody tr:last-child td:last-child {
-  border-radius: 0 0 16px 0;
-}
-
+/* 마지막 행은 하단 border 없음 */
 .member-table tbody tr:last-child td {
   border-bottom: none;
 }
@@ -323,6 +347,7 @@
 .member-index {
   color: var(--text-sub);
   font-weight: 600;
+  text-align: center;
 }
 
 .member-name {
@@ -333,11 +358,6 @@
 .member-email,
 .member-phone {
   color: var(--text-sub);
-}
-
-/* 관리 버튼 셀 */
-.member-table td:last-child {
-  text-align: center;
 }
 
 .member-actions {
