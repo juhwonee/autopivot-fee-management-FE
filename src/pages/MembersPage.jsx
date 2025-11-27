@@ -160,8 +160,8 @@ function MembersPage() {
           },
           body: JSON.stringify({
             name: newMember.name,
+            email: newMember.email,
             phone: newMember.phone,
-            email: newMember.email
           })
         }
       );
