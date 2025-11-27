@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import Modal from '../components/common/Modal'; 
-import ChatBot from '../components/ChatBot';  // 🔥 추가!
+import toast from 'react-hot-toast';
+import ChatBot from '../components/ChatBot';
 import './DashboardPage.css';
 
 // ✨ groupId 유효성 검증 유틸리티 함수
@@ -21,31 +21,6 @@ const DashboardPage = () => {
 
   // 🤖 챗봇 상태 추가
   const [isChatBotOpen, setIsChatBotOpen] = useState(false);
-
-  // 모달 상태 관리
-  const [modalInfo, setModalInfo] = useState({
-    isOpen: false,
-    title: '',
-    message: '',
-    type: 'alert',
-    onConfirm: null
-  });
-
-  // 모달 닫기 함수
-  const closeModal = () => {
-    setModalInfo(prev => ({ ...prev, isOpen: false }));
-  };
-
-  // 모달 띄우는 헬퍼 함수
-  const showModal = (title, message, onConfirm = null, type = 'alert') => {
-    setModalInfo({
-      isOpen: true,
-      title,
-      message,
-      type,
-      onConfirm
-    });
-  };
 
   // ✅ 최우선: URL에서 token 처리 및 인증/그룹 체크
   useEffect(() => {
@@ -125,7 +100,7 @@ const DashboardPage = () => {
       
     } catch (error) {
       console.error('데이터 로딩 오류:', error);
-      showModal('오류 발생', '데이터를 불러오는데 실패했습니다.');
+      toast.error('데이터를 불러오는데 실패했습니다.');
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -163,11 +138,12 @@ const DashboardPage = () => {
     const groupId = localStorage.getItem('currentGroupId');
     
     if (!isValidGroupId(groupId)) {
-      showModal('그룹 선택', '그룹을 먼저 선택해주세요.', () => {
-        navigate('/select-group');
-      });
+      toast.error('그룹을 먼저 선택해주세요.');
+      navigate('/select-group');
       return;
     }
+    
+    const loadingToast = toast.loading('데이터 갱신 중...');
     
     try {
       setIsRefreshing(true);
@@ -181,9 +157,10 @@ const DashboardPage = () => {
         }
       );
       await fetchDashboardData(false);
+      toast.success('새로고침 완료!', { id: loadingToast });
     } catch (error) {
       console.error('새로고침 오류:', error);
-      showModal('새로고침 실패', '데이터 갱신 중 오류가 발생했습니다.');
+      toast.error('데이터 갱신 중 오류가 발생했습니다.', { id: loadingToast });
     } finally {
       setIsRefreshing(false);
     }
@@ -194,9 +171,8 @@ const DashboardPage = () => {
     const groupId = localStorage.getItem('currentGroupId');
     
     if (!isValidGroupId(groupId)) {
-      showModal('그룹 선택', '그룹을 먼저 선택해주세요.', () => {
-        navigate('/select-group');
-      });
+      toast.error('그룹을 먼저 선택해주세요.');
+      navigate('/select-group');
       return;
     }
     
@@ -414,16 +390,6 @@ const DashboardPage = () => {
         isOpen={isChatBotOpen}
         onClose={() => setIsChatBotOpen(false)}
         groupId={localStorage.getItem('currentGroupId')}
-      />
-
-      {/* 모달 컴포넌트 */}
-      <Modal 
-        isOpen={modalInfo.isOpen}
-        onClose={closeModal}
-        onConfirm={modalInfo.onConfirm}
-        title={modalInfo.title}
-        message={modalInfo.message}
-        type={modalInfo.type}
       />
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import './GroupSelectPage.css';
@@ -9,13 +10,17 @@ const GroupSelectPage = () => {
   const [groups, setGroups] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [userName, setUserName] = useState('회원');
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   // ✅ 그룹 선택 핸들러
   const handleSelectGroup = useCallback((group) => {
     console.log('✅ 선택한 그룹 ID:', group.groupId);
     localStorage.setItem('currentGroupId', String(group.groupId));
     localStorage.setItem('currentGroup', JSON.stringify(group));
-    navigate('/dashboard');
+    toast.success(`${group.groupName}에 입장합니다!`);
+    setTimeout(() => {
+      navigate('/dashboard');
+    }, 500);
   }, [navigate]);
 
   // ✅ JWT 토큰에서 사용자 이름 추출
@@ -23,7 +28,7 @@ const GroupSelectPage = () => {
     const token = localStorage.getItem('accessToken');
     
     if (!token) {
-      alert('로그인이 필요합니다.');
+      toast.error('로그인이 필요합니다.');
       navigate('/login');
       return;
     }
@@ -68,13 +73,17 @@ const GroupSelectPage = () => {
         
         // 그룹이 없으면 그룹 생성 페이지로 이동
         if (data.length === 0) {
-          alert('아직 가입된 그룹이 없습니다. 그룹을 만들어주세요!');
+          toast('아직 가입된 그룹이 없습니다. 그룹을 만들어주세요!', {
+            icon: '👋',
+            duration: 3000,
+          });
           navigate('/create-group');
           return;
         }
         
       } catch (error) {
         console.error('❌ 그룹 목록 로딩 오류:', error);
+        toast.error('그룹 목록을 불러오는데 실패했습니다.');
       } finally {
         setIsLoading(false);
       }
@@ -90,11 +99,13 @@ const GroupSelectPage = () => {
 
   // ✅ 로그아웃
   const handleLogout = () => {
-    if (window.confirm('정말 로그아웃 하시겠습니까?')) {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('currentGroupId');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('currentGroupId');
+    toast.success('로그아웃 되었습니다.');
+    setShowLogoutModal(false);
+    setTimeout(() => {
       navigate('/login');
-    }
+    }, 500);
   };
 
   // 카테고리별 아이콘
@@ -225,7 +236,7 @@ const GroupSelectPage = () => {
           <Button
             variant="secondary"
             size="medium"
-            onClick={handleLogout}
+            onClick={() => setShowLogoutModal(true)}
             style={{ 
               background: 'rgba(255,255,255,0.5)', 
               border: '1px solid white',
@@ -237,6 +248,22 @@ const GroupSelectPage = () => {
           </Button>
         </div>
       </div>
+
+      {/* 로그아웃 확인 모달 */}
+      {showLogoutModal && (
+        <div className="modal-overlay" onClick={() => setShowLogoutModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal-title">로그아웃</h3>
+            <p style={{ color: '#64748b', marginBottom: '24px' }}>
+              정말 로그아웃 하시겠습니까?
+            </p>
+            <div className="modal-buttons">
+              <button className="btn-cancel" onClick={() => setShowLogoutModal(false)}>취소</button>
+              <button className="btn-submit" onClick={handleLogout}>로그아웃</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

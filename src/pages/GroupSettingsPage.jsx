@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Modal from '../components/common/Modal';
 import './GroupSettingsPage.css';
 
@@ -21,14 +22,10 @@ const GroupSettingsPage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   
-  // 모달 상태
-  const [modalInfo, setModalInfo] = useState({
-    isOpen: false,
-    title: '',
-    message: '',
-    type: 'alert',
-    onConfirm: null
-  });
+  // 삭제 확인 모달 상태
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  // 나가기 확인 모달 상태
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
 
   const groupCategories = [
     { value: 'CLUB', label: '동아리' },
@@ -38,29 +35,13 @@ const GroupSettingsPage = () => {
     { value: 'OTHER', label: '기타' }
   ];
 
-  // 모달 함수들
-  const closeModal = () => {
-    setModalInfo(prev => ({ ...prev, isOpen: false }));
-  };
-
-  const showModal = (title, message, onConfirm = null, type = 'alert') => {
-    setModalInfo({
-      isOpen: true,
-      title,
-      message,
-      type,
-      onConfirm
-    });
-  };
-
   // 그룹 정보 불러오기
   const fetchGroupInfo = useCallback(async () => {
     const groupId = localStorage.getItem('currentGroupId');
     
     if (!groupId || groupId === 'undefined' || groupId === 'null') {
-      showModal('오류', '그룹을 먼저 선택해주세요.', () => {
-        navigate('/select-group');
-      });
+      toast.error('그룹을 먼저 선택해주세요.');
+      navigate('/select-group');
       return;
     }
 
@@ -100,7 +81,7 @@ const GroupSettingsPage = () => {
       
     } catch (error) {
       console.error('그룹 정보 로딩 오류:', error);
-      showModal('오류', error.message);
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -130,19 +111,19 @@ const GroupSettingsPage = () => {
   // 유효성 검사
   const validateForm = () => {
     if (!groupName.trim()) {
-      showModal('입력 오류', '그룹명을 입력해주세요.');
+      toast.error('그룹명을 입력해주세요.');
       return false;
     }
     if (!accountName.trim()) {
-      showModal('입력 오류', '통장 이름을 입력해주세요.');
+      toast.error('통장 이름을 입력해주세요.');
       return false;
     }
     if (!fee || parseInt(fee) <= 0) {
-      showModal('입력 오류', '월 회비 금액을 입력해주세요.');
+      toast.error('월 회비 금액을 입력해주세요.');
       return false;
     }
     if (!groupCategory) {
-      showModal('입력 오류', '그룹 카테고리를 선택해주세요.');
+      toast.error('그룹 카테고리를 선택해주세요.');
       return false;
     }
     return true;
@@ -153,11 +134,12 @@ const GroupSettingsPage = () => {
     if (!validateForm()) return;
     
     if (!hasChanges()) {
-      showModal('알림', '변경된 내용이 없습니다.');
+      toast('변경된 내용이 없습니다.', { icon: 'ℹ️' });
       return;
     }
 
     const groupId = localStorage.getItem('currentGroupId');
+    const loadingToast = toast.loading('저장 중...');
 
     try {
       setIsSaving(true);
@@ -196,71 +178,65 @@ const GroupSettingsPage = () => {
         groupCategory
       });
 
-      showModal('성공', '그룹 정보가 수정되었습니다.', () => {
+      toast.success('그룹 정보가 수정되었습니다!', { id: loadingToast });
+      
+      setTimeout(() => {
         navigate('/dashboard');
-      });
+      }, 1000);
       
     } catch (error) {
       console.error('그룹 수정 오류:', error);
-      showModal('오류', error.message);
+      toast.error(error.message, { id: loadingToast });
     } finally {
       setIsSaving(false);
     }
   };
 
   // 그룹 삭제
-  const handleDelete = () => {
-    showModal(
-      '그룹 삭제',
-      '정말로 이 그룹을 삭제하시겠습니까?\n\n삭제된 그룹은 복구할 수 없으며, 모든 멤버와 회비 내역이 함께 삭제됩니다.',
-      async () => {
-        const groupId = localStorage.getItem('currentGroupId');
-        
-        try {
-          setIsDeleting(true);
-          
-          const response = await fetch(
-            `https://seongchan-spring.store/api/groups/${groupId}`,
-            {
-              method: 'DELETE',
-              headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-              }
-            }
-          );
-
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || '그룹 삭제에 실패했습니다.');
+  const handleDelete = async () => {
+    const groupId = localStorage.getItem('currentGroupId');
+    const loadingToast = toast.loading('삭제 중...');
+    
+    try {
+      setIsDeleting(true);
+      
+      const response = await fetch(
+        `https://seongchan-spring.store/api/groups/${groupId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
           }
-
-          // 로컬 스토리지에서 그룹 ID 제거
-          localStorage.removeItem('currentGroupId');
-          
-          showModal('삭제 완료', '그룹이 삭제되었습니다.', () => {
-            navigate('/select-group');
-          });
-          
-        } catch (error) {
-          console.error('그룹 삭제 오류:', error);
-          showModal('오류', error.message);
-        } finally {
-          setIsDeleting(false);
         }
-      },
-      'confirm'
-    );
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || '그룹 삭제에 실패했습니다.');
+      }
+
+      // 로컬 스토리지에서 그룹 ID 제거
+      localStorage.removeItem('currentGroupId');
+      
+      toast.success('그룹이 삭제되었습니다.', { id: loadingToast });
+      
+      setTimeout(() => {
+        navigate('/select-group');
+      }, 1000);
+      
+    } catch (error) {
+      console.error('그룹 삭제 오류:', error);
+      toast.error(error.message, { id: loadingToast });
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+    }
   };
 
   // 뒤로가기 (변경사항 확인)
   const handleBack = () => {
     if (hasChanges()) {
-      showModal(
-        '변경사항 있음',
-        '저장하지 않은 변경사항이 있습니다.\n정말 나가시겠습니까?',
-        () => navigate('/dashboard'),
-        'confirm'
-      );
+      setShowLeaveModal(true);
     } else {
       navigate('/dashboard');
     }
@@ -390,7 +366,7 @@ const GroupSettingsPage = () => {
 
           {/* 섹션 3: 위험 구역 */}
           <div className="settings-danger-section">
-            <h3 className="settings-danger-title">⚠️ 위험 구역</h3>
+            <h3 className="settings-danger-title">⚠️ 위험</h3>
             <p className="settings-danger-description">
               그룹을 삭제하면 모든 멤버 정보와 회비 내역이 영구적으로 삭제됩니다.
               이 작업은 되돌릴 수 없습니다.
@@ -398,7 +374,7 @@ const GroupSettingsPage = () => {
             <button
               type="button"
               className="settings-delete-btn"
-              onClick={handleDelete}
+              onClick={() => setShowDeleteModal(true)}
               disabled={isDeleting}
             >
               {isDeleting ? '삭제 중...' : '🗑️ 그룹 삭제하기'}
@@ -426,15 +402,44 @@ const GroupSettingsPage = () => {
         </form>
       </div>
 
-      {/* 모달 컴포넌트 */}
-      <Modal 
-        isOpen={modalInfo.isOpen}
-        onClose={closeModal}
-        onConfirm={modalInfo.onConfirm}
-        title={modalInfo.title}
-        message={modalInfo.message}
-        type={modalInfo.type}
-      />
+      {/* 삭제 확인 모달 */}
+      {showDeleteModal && (
+        <div className="modal-overlay" onClick={() => setShowDeleteModal(false)}>
+          <div className="modal-content delete-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="delete-modal__icon">⚠️</div>
+            <h3 className="modal-title">그룹 삭제</h3>
+            <p className="delete-modal__message">
+              정말로 이 그룹을 삭제하시겠습니까?
+            </p>
+            <p className="delete-modal__warning">
+              삭제된 그룹은 복구할 수 없으며, 모든 멤버와 회비 내역이 함께 삭제됩니다.
+            </p>
+            <div className="modal-buttons">
+              <button className="btn-cancel" onClick={() => setShowDeleteModal(false)}>취소</button>
+              <button className="btn-delete" onClick={handleDelete} disabled={isDeleting}>
+                {isDeleting ? '삭제 중...' : '삭제하기'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 나가기 확인 모달 */}
+      {showLeaveModal && (
+        <div className="modal-overlay" onClick={() => setShowLeaveModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal-title">변경사항 있음</h3>
+            <p style={{ color: '#64748b', marginBottom: '24px', lineHeight: '1.6' }}>
+              저장하지 않은 변경사항이 있습니다.<br/>
+              정말 나가시겠습니까?
+            </p>
+            <div className="modal-buttons">
+              <button className="btn-cancel" onClick={() => setShowLeaveModal(false)}>취소</button>
+              <button className="btn-submit" onClick={() => navigate('/dashboard')}>나가기</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import SocialLoginButton from '../components/auth/SocialLoginButton';
 import './LoginPage.css';
 import logoCharacter from '../assets/images/logo-character.png';
@@ -9,9 +10,13 @@ const LoginPage = () => {
   const handleSocialLogin = async (provider) => {
     if (provider === 'kakao') {
       setLoading(true);
+      toast.loading('카카오 로그인 페이지로 이동 중...');
       window.location.href = 'https://seongchan-spring.store/api/auth/kakao-login';
     } else if (provider === 'naver') {
-      alert('네이버 로그인은 준비 중입니다.');
+      toast('네이버 로그인은 준비 중입니다.', {
+        icon: '🚧',
+        duration: 3000,
+      });
     }
   };
 

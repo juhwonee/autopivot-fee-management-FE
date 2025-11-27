@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Button from '../components/common/Button';
 import './CreateGroupPage.css';
 
@@ -46,29 +47,30 @@ const CreateGroupPage = () => {
     if (file) {
       const fileExtension = file.name.split('.').pop().toLowerCase();
       if (!['xlsx', 'xls', 'csv'].includes(fileExtension)) {
-        alert('엑셀 파일(.xlsx, .xls) 또는 CSV 파일만 업로드 가능합니다.');
+        toast.error('엑셀 파일(.xlsx, .xls) 또는 CSV 파일만 업로드 가능합니다.');
         return;
       }
       setExcelFile(file);
       setFileName(file.name);
+      toast.success(`${file.name} 파일이 선택되었습니다.`);
     }
   };
 
   const validateStep1 = () => {
     if (!groupName.trim()) {
-      alert('그룹명을 입력해주세요.');
+      toast.error('그룹명을 입력해주세요.');
       return false;
     }
     if (!accountName.trim()) {
-      alert('통장 이름을 입력해주세요.');
+      toast.error('통장 이름을 입력해주세요.');
       return false;
     }
     if (!fee || fee <= 0) {
-      alert('월 회비 금액을 입력해주세요.');
+      toast.error('월 회비 금액을 입력해주세요.');
       return false;
     }
     if (!groupCategory) {
-      alert('그룹 카테고리를 선택해주세요.');
+      toast.error('그룹 카테고리를 선택해주세요.');
       return false;
     }
     return true;
@@ -79,6 +81,8 @@ const CreateGroupPage = () => {
     if (!validateStep1()) {
       return;
     }
+
+    const loadingToast = toast.loading('그룹 생성 중...');
 
     try {
       setIsLoading(true);
@@ -116,12 +120,14 @@ const CreateGroupPage = () => {
       setCreatedGroupId(groupId);
       localStorage.setItem('currentGroupId', groupId);
       
+      toast.success('그룹이 생성되었습니다!', { id: loadingToast });
+      
       // Step 2로 이동
       setCurrentStep(2);
       
     } catch (error) {
       console.error('그룹 생성 오류:', error);
-      alert(error.message || '그룹 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+      toast.error(error.message || '그룹 생성 중 오류가 발생했습니다.', { id: loadingToast });
     } finally {
       setIsLoading(false);
     }
@@ -131,10 +137,14 @@ const CreateGroupPage = () => {
   const handleAddMembers = async () => {
     // 엑셀 파일이 없으면 바로 대시보드로
     if (hasExcelFile === false || !excelFile) {
-      alert('그룹이 성공적으로 생성되었습니다!');
-      navigate('/dashboard');
+      toast.success('그룹이 성공적으로 생성되었습니다!');
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 500);
       return;
     }
+
+    const loadingToast = toast.loading('멤버 추가 중...');
 
     try {
       setIsLoading(true);
@@ -160,16 +170,21 @@ const CreateGroupPage = () => {
 
       const result = await response.json();
       
-      alert(`그룹이 생성되고 ${result.count || result.length || '여러'} 명의 멤버가 추가되었습니다!`);
-      navigate('/dashboard');
+      toast.success(`${result.count || result.length || '여러'} 명의 멤버가 추가되었습니다!`, { id: loadingToast });
+      
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 500);
       
     } catch (error) {
       console.error('멤버 추가 오류:', error);
       // 멤버 추가 실패해도 그룹은 생성되었으므로
-      alert(
-        `그룹은 생성되었지만 멤버 추가 중 오류가 발생했습니다.\n${error.message}\n\n그룹 페이지에서 나중에 멤버를 추가할 수 있습니다.`
-      );
-      navigate('/dashboard');
+      toast.error(`멤버 추가 중 오류 발생: ${error.message}`, { id: loadingToast });
+      toast('그룹 페이지에서 나중에 멤버를 추가할 수 있습니다.', { icon: 'ℹ️', duration: 4000 });
+      
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
     } finally {
       setIsLoading(false);
     }
@@ -179,18 +194,21 @@ const CreateGroupPage = () => {
     e.preventDefault();
     
     if (hasExcelFile === null) {
-      alert('엑셀 파일 보유 여부를 선택해주세요.');
+      toast.error('엑셀 파일 보유 여부를 선택해주세요.');
       return;
     }
     
     if (hasExcelFile && !excelFile) {
-      alert('엑셀 파일을 업로드해주세요.');
+      toast.error('엑셀 파일을 업로드해주세요.');
       return;
     }
 
     // Step 2에서는 멤버 추가만 수행
     await handleAddMembers();
   };
+
+  // 건너뛰기 확인 모달 상태
+  const [showSkipModal, setShowSkipModal] = useState(false);
 
   return (
     <div className="create-group-page">
@@ -394,13 +412,7 @@ const CreateGroupPage = () => {
                   type="button"
                   variant="secondary"
                   size="large"
-                  onClick={() => {
-                    // Step 1로 돌아갈 수 없음 (이미 그룹 생성됨)
-                    // 대신 바로 대시보드로
-                    if (window.confirm('이전 단계로 돌아갈 수 없습니다.\n멤버 추가를 건너뛰고 대시보드로 이동하시겠습니까?')) {
-                      navigate('/dashboard');
-                    }
-                  }}
+                  onClick={() => setShowSkipModal(true)}
                   style={{ flex: 1, borderRadius: '16px', height: '54px' }}
                   disabled={isLoading}
                 >
@@ -420,6 +432,27 @@ const CreateGroupPage = () => {
           )}
         </form>
       </div>
+
+      {/* 건너뛰기 확인 모달 */}
+      {showSkipModal && (
+        <div className="modal-overlay" onClick={() => setShowSkipModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal-title">멤버 추가 건너뛰기</h3>
+            <p style={{ color: '#64748b', marginBottom: '24px', lineHeight: '1.6' }}>
+              멤버 추가를 건너뛰고 대시보드로 이동하시겠습니까?<br/>
+              나중에 멤버 관리에서 추가할 수 있습니다.
+            </p>
+            <div className="modal-buttons">
+              <button className="btn-cancel" onClick={() => setShowSkipModal(false)}>취소</button>
+              <button className="btn-submit" onClick={() => {
+                setShowSkipModal(false);
+                toast.success('그룹이 생성되었습니다!');
+                navigate('/dashboard');
+              }}>건너뛰기</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import './AuthCallbackPage.css';
 
 const AuthCallbackPage = () => {
@@ -15,7 +16,7 @@ const AuthCallbackPage = () => {
 
       // 에러 처리
       if (error) {
-        alert(`로그인 실패: ${message || '다시 시도해주세요.'}`);
+        toast.error(`로그인 실패: ${message || '다시 시도해주세요.'}`);
         navigate('/login');
         return;
       }
@@ -49,19 +50,22 @@ const AuthCallbackPage = () => {
         if (groups.length === 0) {
           // 그룹 없음 → 그룹 만들기 페이지
           setStatusMessage('새로운 시작을 준비하는 중...');
+          toast.success('환영합니다! 첫 그룹을 만들어보세요.');
           setTimeout(() => {
             navigate('/create-group', { replace: true });
-          }, 800); // 사용자가 메시지를 읽을 틈을 주기 위해 시간 살짝 늘림
+          }, 800);
         } else if (groups.length === 1) {
           // 그룹 1개 → 바로 대시보드로
           localStorage.setItem('currentGroupId', groups[0].id);
           setStatusMessage('대시보드로 이동합니다!');
+          toast.success('로그인 성공!');
           setTimeout(() => {
             navigate('/dashboard', { replace: true });
           }, 800);
         } else {
           // 그룹 여러 개 → 그룹 선택 페이지
           setStatusMessage('어디로 입장할까요?');
+          toast.success('로그인 성공! 그룹을 선택해주세요.');
           setTimeout(() => {
             navigate('/select-group', { replace: true });
           }, 800);
@@ -69,7 +73,7 @@ const AuthCallbackPage = () => {
 
       } catch (error) {
         console.error('로그인 처리 오류:', error);
-        alert('로그인 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+        toast.error('로그인 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
         localStorage.removeItem('accessToken');
         navigate('/login', { replace: true });
       }

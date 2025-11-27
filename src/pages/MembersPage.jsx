@@ -416,7 +416,7 @@ function MembersPage() {
             <div className="add-card">
               <h4 className="add-card__title">수동 추가</h4>
               <p className="add-card__desc">멤버를 직접 입력하여 추가합니다</p>
-              <button className="add-btn" onClick={() => setShowAddModal(true)}>➕ 새 멤버 추가</button>
+              <button className="add-btn" onClick={() => setShowAddModal(true)}>새 멤버 추가</button>
             </div>
           </div>
         </div>
