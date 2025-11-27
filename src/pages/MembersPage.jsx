@@ -25,8 +25,6 @@ function MembersPage() {
     studentId: ''
   });
 
-  // fetchMembers를 useCallback으로 감싸고 useEffect 위로 올림
-  // 이렇게 하면 컴포넌트가 리렌더링되어도 함수 객체가 변경되지 않아 무한 루프를 방지합니다.
   const fetchMembers = useCallback(async () => {
     const groupId = localStorage.getItem('currentGroupId');
     const token = localStorage.getItem('accessToken');
@@ -198,7 +196,7 @@ function MembersPage() {
             ← 대시보드
           </button>
           <div className="header-center">
-            <h1 className="member-page__title">👥 멤버 관리</h1>
+            <h1 className="member-page__title">멤버 관리</h1>
             {groupName && (
               <p className="member-page__group">
                 <span className="group-badge">GROUP</span>
@@ -212,7 +210,7 @@ function MembersPage() {
         <div className="member-page__content">
           <div className="member-list-main">
             <div className="section-header">
-              <h3 className="section-title">📋 멤버 목록</h3>
+              <h3 className="section-title">멤버 목록</h3>
               <span className="member-count">{members.length}명</span>
             </div>
 

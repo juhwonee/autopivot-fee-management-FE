@@ -14,6 +14,7 @@ const GroupSelectPage = () => {
   const handleSelectGroup = useCallback((groupId) => {
     console.log('✅ 선택한 그룹 ID:', groupId);
     localStorage.setItem('currentGroupId', String(groupId));
+    localStorage.setItem('currentGroup', JSON.stringify(group));
     navigate('/dashboard');
   }, [navigate]);
 
@@ -168,7 +169,7 @@ const GroupSelectPage = () => {
               key={group.groupId}
               className="group-card"
               hover={true}
-              onClick={() => handleSelectGroup(group.groupId)}
+              onClick={() => handleSelectGroup(group)}
             >
               {/* 카드 상단: 카테고리 색상 배경 */}
               <div 
