@@ -300,35 +300,31 @@
   background: rgba(59, 130, 246, 0.04);
 }
 
-/* ✅ 컬럼 너비 고정 (총합 100%) */
+/* ✅ 컬럼 너비 고정 */
 .member-table th:nth-child(1),
 .member-table td:nth-child(1) {
-  width: 50px;  /* # - 고정 */
-  min-width: 50px;
+  width: 50px;  /* # */
   text-align: center;
 }
 
 .member-table th:nth-child(2),
 .member-table td:nth-child(2) {
-  width: 100px; /* 이름 - 고정 */
-  min-width: 100px;
+  width: 100px; /* 이름 */
 }
 
 .member-table th:nth-child(3),
 .member-table td:nth-child(3) {
-  width: auto; /* 이메일 - 나머지 공간 */
+  width: 200px; /* 이메일 - 고정 너비로 변경 */
 }
 
 .member-table th:nth-child(4),
 .member-table td:nth-child(4) {
-  width: 140px; /* 전화번호 - 고정 */
-  min-width: 140px;
+  width: 140px; /* 전화번호 */
 }
 
 .member-table th:nth-child(5),
 .member-table td:nth-child(5) {
-  width: 110px; /* 관리 - 고정 */
-  min-width: 110px;
+  width: 110px; /* 관리 */
   text-align: center;
 }
 
