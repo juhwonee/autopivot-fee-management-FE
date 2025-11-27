@@ -12,8 +12,8 @@ const GroupSelectPage = () => {
 
   // ✅ 그룹 선택 핸들러
   const handleSelectGroup = useCallback((group) => {
-    console.log('✅ 선택한 그룹 ID:', groupId);
-    localStorage.setItem('currentGroupId', String(groupId));
+    console.log('✅ 선택한 그룹 ID:', group.groupId);
+    localStorage.setItem('currentGroupId', String(group.groupId));
     localStorage.setItem('currentGroup', JSON.stringify(group));
     navigate('/dashboard');
   }, [navigate]);
