@@ -13,6 +13,7 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);  // ✅ 입력창 ref 추가!
 
   // 추천 질문 데이터
   const quickQuestions = [
@@ -29,6 +30,15 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
     scrollToBottom();
   }, [messages, isLoading]);
 
+  // ✅ 챗봇 열릴 때 입력창에 포커스
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      setTimeout(() => {
+        inputRef.current.focus();
+      }, 100);
+    }
+  }, [isOpen]);
+
   const handleSendMessage = async (text) => {
     if (!text.trim() || isLoading) return;
 
@@ -42,6 +52,13 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
     setIsLoading(true);
+
+    // ✅ 메시지 전송 후 바로 포커스 유지
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 0);
 
     try {
       const response = await fetch(
@@ -83,6 +100,13 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+      
+      // ✅ 응답 받은 후에도 포커스 유지
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 1);
     }
   };
 
@@ -99,6 +123,16 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
       minute: '2-digit',
       hour12: true
     });
+  };
+
+  // ✅ 추천 질문 클릭 후에도 포커스 유지
+  const handleQuickQuestion = (text) => {
+    handleSendMessage(text);
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 0);
   };
 
   if (!isOpen) return null;
@@ -157,31 +191,28 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* ★ 수정됨: 추천 질문 영역 
-          1. 메시지 영역 밖으로 이동 (항상 하단 고정)
-          2. messages.length 조건 삭제 (대화해도 사라지지 않음)
-          3. 가로 스크롤 (Chip) 스타일 적용
-        */}
+        {/* 추천 질문 영역 */}
         {!isLoading && (
-            <div className="suggestions-container">
-              <div className="suggestions-scroll-area">
-                {quickQuestions.map((q, idx) => (
-                  <button 
-                    key={idx} 
-                    className="suggestion-chip"
-                    onClick={() => handleSendMessage(q.text)}
-                  >
-                    <span>{q.icon}</span>
-                    {q.text}
-                  </button>
-                ))}
-              </div>
+          <div className="suggestions-container">
+            <div className="suggestions-scroll-area">
+              {quickQuestions.map((q, idx) => (
+                <button 
+                  key={idx} 
+                  className="suggestion-chip"
+                  onClick={() => handleQuickQuestion(q.text)}
+                >
+                  <span>{q.icon}</span>
+                  {q.text}
+                </button>
+              ))}
             </div>
+          </div>
         )}
 
         {/* 입력 영역 */}
         <div className="chatbot-input-area">
           <input
+            ref={inputRef}  // ✅ ref 연결!
             type="text"
             className="chatbot-input"
             placeholder="궁금한 내용을 입력하세요..."
@@ -189,6 +220,7 @@ const ChatBot = ({ isOpen, onClose, groupId }) => {
             onChange={(e) => setInputText(e.target.value)}
             onKeyPress={handleKeyPress}
             disabled={isLoading}
+            autoFocus  // ✅ 자동 포커스
           />
           <button 
             className="chatbot-send-btn"

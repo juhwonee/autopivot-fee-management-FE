@@ -213,7 +213,7 @@
   overflow-x: auto;
   
   /* ★ 중요: 패딩을 스크롤 영역 내부로 이동시켜 끝부분이 잘리지 않게 함 */
-  padding: 0 24px 12px 24px; 
+  padding: 5px 24px 12px 24px; 
   
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
@@ -225,7 +225,7 @@
 
 .suggestion-chip {
   flex: 0 0 auto; /* 줄바꿈 및 찌그러짐 방지 */
-  padding: 10px 16px;
+  padding: 10px 20px;
   background: #ffffff;
   border: 1px solid #e5e8eb;
   border-radius: 20px;

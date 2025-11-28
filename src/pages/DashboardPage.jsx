@@ -1,17 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import ChatBot from '../components/ChatBot';
 import './DashboardPage.css';
 
-// ✨ groupId 유효성 검증 유틸리티 함수
+// ✨ groupId 유효성 검증
 const isValidGroupId = (groupId) => {
   return groupId && groupId !== 'undefined' && groupId !== 'null';
 };
 
-// 🎨 세련된 SVG 아이콘 컴포넌트들
+// 🎨 SVG 아이콘 컴포넌트
 const Icons = {
-  // 새로고침 아이콘
   Refresh: ({ className }) => (
     <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
@@ -21,7 +19,6 @@ const Icons = {
     </svg>
   ),
   
-  // 회비 관리 (지갑 아이콘)
   Wallet: () => (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
@@ -29,7 +26,6 @@ const Icons = {
     </svg>
   ),
   
-  // 멤버 목록 (사용자들 아이콘)
   Users: () => (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
@@ -39,7 +35,6 @@ const Icons = {
     </svg>
   ),
   
-  // 그룹 설정 (톱니바퀴 아이콘)
   Settings: () => (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
@@ -47,7 +42,6 @@ const Icons = {
     </svg>
   ),
   
-  // 총 목표 금액 (동전 쌓인 아이콘)
   Coins: () => (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="8" cy="8" r="6"/>
@@ -57,7 +51,6 @@ const Icons = {
     </svg>
   ),
   
-  // 전체 멤버 (사용자 그룹 아이콘)
   UserGroup: () => (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M18 21a8 8 0 0 0-16 0"/>
@@ -65,33 +58,218 @@ const Icons = {
       <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/>
     </svg>
   ),
-  
-  // AI 챗봇 (스파클 아이콘)
-  Sparkles: () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-      <path d="M5 3v4"/>
-      <path d="M19 17v4"/>
-      <path d="M3 5h4"/>
-      <path d="M17 19h4"/>
-    </svg>
-  ),
-  
-  // 체크 완료 (체크 서클)
-  CheckCircle: () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-      <polyline points="22,4 12,14.01 9,11.01"/>
-    </svg>
-  ),
-  
-  // 대기중 (시계)
-  Clock: () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <polyline points="12,6 12,12 16,14"/>
+
+  Send: () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 12h14"/>
+      <path d="m12 5 7 7-7 7"/>
     </svg>
   )
+};
+
+// 🤖 인라인 채팅 패널 컴포넌트 (기존 ChatBot 로직 반영)
+const InlineChatPanel = ({ groupId }) => {
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      sender: 'bot',
+      text: '안녕하세요! AI 도우미 두레입니다. 🤖\n무엇을 도와드릴까요?',
+      timestamp: new Date()
+    }
+  ]);
+  const [inputText, setInputText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
+
+  // 추천 질문
+  const quickQuestions = [
+    { text: '미납자 현황', icon: '📋' },
+    { text: '이번 달 회비', icon: '💰' },
+    { text: '사용법 안내', icon: '💡' }
+  ];
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isLoading]);
+
+  // 메시지 전송 (기존 ChatBot API 엔드포인트 사용)
+  const handleSendMessage = async (text) => {
+    if (!text.trim() || isLoading) return;
+
+    const userMessage = {
+      id: Date.now(),
+      sender: 'user',
+      text: text.trim(),
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputText('');
+    setIsLoading(true);
+
+    setTimeout(() => {
+      if (inputRef.current) inputRef.current.focus();
+    }, 0);
+
+    try {
+      const response = await fetch(
+        `https://seongchan-spring.store/api/groups/${groupId}/chatbot/message`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          },
+          body: JSON.stringify({
+            message: text.trim(),
+            sessionId: `session-${Date.now()}`
+          })
+        }
+      );
+
+      if (!response.ok) throw new Error('Network response was not ok');
+
+      const data = await response.json();
+
+      const botMessage = {
+        id: Date.now() + 1,
+        sender: 'bot',
+        text: data.response,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, botMessage]);
+
+    } catch (error) {
+      console.error('Chatbot Error:', error);
+      const errorMessage = {
+        id: Date.now() + 1,
+        sender: 'bot',
+        text: '죄송합니다. 잠시 후 다시 시도해주세요. 😥',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+      setTimeout(() => {
+        if (inputRef.current) inputRef.current.focus();
+      }, 1);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage(inputText);
+    }
+  };
+
+  const formatTime = (date) => {
+    return date.toLocaleTimeString('ko-KR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
+  const handleQuickQuestion = (text) => {
+    handleSendMessage(text);
+  };
+
+  return (
+    <div className="inline-chat-panel">
+      {/* 헤더 */}
+      <div className="chat-panel-header">
+        <div className="chat-panel-title">
+          <div className="chat-bot-avatar">🤖</div>
+          <div>
+            <h4>두레</h4>
+            <span className="chat-status">Online</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 메시지 영역 */}
+      <div className="chat-messages-area">
+        {messages.map((message) => (
+          <div 
+            key={message.id} 
+            className={`chat-message ${message.sender === 'user' ? 'chat-message--user' : 'chat-message--bot'}`}
+          >
+            {message.sender === 'bot' && (
+              <div className="message-avatar bot-avatar">🤖</div>
+            )}
+            <div className="message-content">
+              <div className="message-bubble">
+                {message.text.split('\n').map((line, i) => (
+                  <React.Fragment key={i}>
+                    {line}
+                    {i < message.text.split('\n').length - 1 && <br />}
+                  </React.Fragment>
+                ))}
+              </div>
+              <span className="message-time">{formatTime(message.timestamp)}</span>
+            </div>
+          </div>
+        ))}
+
+        {isLoading && (
+          <div className="chat-message chat-message--bot">
+            <div className="message-avatar bot-avatar">🤖</div>
+            <div className="message-content">
+              <div className="message-bubble typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* 추천 질문 */}
+      {!isLoading && messages.length <= 3 && (
+        <div className="quick-questions">
+          {quickQuestions.map((q, idx) => (
+            <button 
+              key={idx} 
+              className="quick-question-btn"
+              onClick={() => handleQuickQuestion(q.text)}
+            >
+              <span>{q.icon}</span>
+              {q.text}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* 입력 영역 */}
+      <div className="chat-input-area">
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder="궁금한 내용을 입력하세요..."
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          onKeyPress={handleKeyPress}
+          disabled={isLoading}
+        />
+        <button 
+          className="chat-send-btn"
+          onClick={() => handleSendMessage(inputText)}
+          disabled={isLoading || !inputText.trim()}
+        >
+          <Icons.Send />
+        </button>
+      </div>
+    </div>
+  );
 };
 
 const DashboardPage = () => {
@@ -104,37 +282,26 @@ const DashboardPage = () => {
   const [lastUpdated, setLastUpdated] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // 🤖 챗봇 상태 추가
-  const [isChatBotOpen, setIsChatBotOpen] = useState(false);
-
-  // ✅ 최우선: URL에서 token 처리 및 인증/그룹 체크
+  // ✅ URL에서 token 처리 및 인증/그룹 체크
   useEffect(() => {
-    // 1. URL 파라미터에서 token 확인 (OAuth 콜백)
     const tokenFromUrl = searchParams.get('token');
     if (tokenFromUrl) {
-      console.log('URL에서 token 발견, localStorage에 저장');
       localStorage.setItem('accessToken', tokenFromUrl);
-      // URL에서 token 파라미터 제거 (보안)
       window.history.replaceState({}, '', '/dashboard');
     }
 
-    // 2. 토큰 체크
     const token = localStorage.getItem('accessToken');
     if (!token) {
-      console.log('토큰 없음, 로그인 페이지로 이동');
       navigate('/login', { replace: true });
       return;
     }
 
-    // 3. groupId 체크 - 없으면 즉시 리다이렉트
     const currentGroupId = localStorage.getItem('currentGroupId');
     if (!isValidGroupId(currentGroupId)) {
-      console.log('groupId 없음 또는 유효하지 않음, select-group으로 이동');
       navigate('/select-group', { replace: true });
       return;
     }
 
-    // 4. 토큰에서 사용자 정보 파싱
     try {
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -161,9 +328,7 @@ const DashboardPage = () => {
       
       const groupId = localStorage.getItem('currentGroupId');
       
-      // ✅ 개선된 groupId 검증
       if (!isValidGroupId(groupId)) {
-        console.warn('유효하지 않은 groupId:', groupId);
         navigate('/select-group', { replace: true });
         return;
       }
@@ -202,23 +367,19 @@ const DashboardPage = () => {
     }
   }, [fetchDashboardData]);
 
-  // ✅ 자동 새로고침 (60초마다) - 개선된 검증
+  // 자동 새로고침 (60초)
   useEffect(() => {
     const interval = setInterval(() => {
       const groupId = localStorage.getItem('currentGroupId');
-      
-      // ✅ 핵심 수정: 'undefined', 'null' 문자열도 체크
       if (isValidGroupId(groupId)) {
         fetchDashboardData(false);
-      } else {
-        console.warn('자동 새로고침 건너뜀: 유효하지 않은 groupId');
       }
     }, 60000);
     
     return () => clearInterval(interval);
   }, [fetchDashboardData]);
 
-  // ✅ 수동 새로고침 - 개선된 검증
+  // 수동 새로고침
   const handleManualRefresh = async () => {
     const groupId = localStorage.getItem('currentGroupId');
     
@@ -251,33 +412,6 @@ const DashboardPage = () => {
     }
   };
 
-  // 🤖 챗봇 열기
-  const handleOpenChatBot = () => {
-    const groupId = localStorage.getItem('currentGroupId');
-    
-    if (!isValidGroupId(groupId)) {
-      toast.error('그룹을 먼저 선택해주세요.');
-      navigate('/select-group');
-      return;
-    }
-    
-    setIsChatBotOpen(true);
-  };
-
-  // 시간 포맷 함수
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = Math.floor((now - date) / 1000);
-    if (diff < 60) return '방금 전';
-    if (diff < 3600) return `${Math.floor(diff / 60)}분 전`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)}시간 전`;
-    return date.toLocaleDateString('ko-KR', { 
-      month: 'numeric', 
-      day: 'numeric' 
-    });
-  };
-
   // 로딩 화면
   if (isLoading || !dashboardData) {
     return (
@@ -290,7 +424,7 @@ const DashboardPage = () => {
     );
   }
 
-  // 빠른 실행 메뉴 - SVG 아이콘으로 교체
+  // 빠른 실행 메뉴
   const quickActions = [
     { 
       id: 'fees', 
@@ -319,7 +453,7 @@ const DashboardPage = () => {
     <div className="dashboard-page">
       <div className="dashboard-content">
         
-        {/* 1. 헤더 영역 */}
+        {/* 1. 헤더 */}
         <div className="dashboard-header">
           <div className="header-greeting">
             <h2>반가워요, {userName}님!</h2>
@@ -349,7 +483,7 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* 2. 히어로 카드 (납부율 & 총액) */}
+        {/* 2. 히어로 카드 */}
         <div className="hero-card">
           <div className="hero-header">
             <span className="hero-title">이번 달 회비 납부율</span>
@@ -400,12 +534,12 @@ const DashboardPage = () => {
           ))}
         </div>
 
-        {/* 4. 하단 정보 그리드 */}
+        {/* 4. 하단 그리드 - 상세현황 + 인라인 채팅 */}
         <div className="dashboard-bottom-grid">
           
-          {/* 상세 현황 패널 */}
+          {/* 상세 현황 */}
           <div className="glass-panel">
-            <h3 className="panel-title">상세 현황</h3>
+            <h3 className="panel-title">📊 상세 현황</h3>
             <div className="status-list">
               <div className="status-item">
                 <div className="status-icon status-icon--coins">
@@ -429,58 +563,13 @@ const DashboardPage = () => {
                 </div>
               </div>
             </div>
-            
-            {/* 🤖 AI 비서 버튼 - 챗봇 열기 */}
-            <button 
-              className="chatbot-trigger-btn" 
-              onClick={handleOpenChatBot}
-            >
-              <Icons.Sparkles />
-              AI 비서 총총이에게 물어보기
-            </button>
           </div>
 
-          {/* 최근 입금 내역 패널 */}
-          <div className="glass-panel">
-            <h3 className="panel-title">최근 입금 내역</h3>
-            
-            {dashboardData.recentPayments && dashboardData.recentPayments.length > 0 ? (
-              <div className="activity-list">
-                {dashboardData.recentPayments.map((payment) => (
-                  <div key={payment.paymentId} className="activity-item">
-                    <div className="activity-icon">
-                      {payment.status === 'PAID' ? <Icons.CheckCircle /> : <Icons.Clock />}
-                    </div>
-                    <div className="activity-info">
-                      <p className="activity-msg">
-                        <strong>{payment.memberName}</strong>님이 입금했습니다.
-                      </p>
-                      <span className="activity-time">
-                        {formatTime(payment.paidAt)}
-                      </span>
-                    </div>
-                    <div className="activity-amount">
-                      {payment.amount?.toLocaleString()}원
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="empty-state">
-                <p>아직 입금 내역이 없어요.</p>
-              </div>
-            )}
-          </div>
+          {/* 🤖 인라인 채팅 패널 */}
+          <InlineChatPanel groupId={localStorage.getItem('currentGroupId')} />
 
         </div>
       </div>
-
-      {/* 🤖 챗봇 컴포넌트 */}
-      <ChatBot 
-        isOpen={isChatBotOpen}
-        onClose={() => setIsChatBotOpen(false)}
-        groupId={localStorage.getItem('currentGroupId')}
-      />
     </div>
   );
 };
