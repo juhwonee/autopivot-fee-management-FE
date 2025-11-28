@@ -185,7 +185,6 @@
 }
 
 .section-title::before {
-  content: '👥';
   font-size: 20px;
 }
 
@@ -360,10 +359,6 @@
   gap: 6px;
 }
 
-.upload-card__title::before {
-  content: '📤';
-}
-
 .upload-card__desc {
   font-size: 13px;
   color: var(--slate-500);
@@ -461,10 +456,6 @@
   display: flex;
   align-items: center;
   gap: 6px;
-}
-
-.add-card__title::before {
-  content: '✏️';
 }
 
 .add-card__desc {
