@@ -527,7 +527,6 @@ const DashboardPage = () => {
   // 계산된 데이터
   const targetAmount = dashboardData.totalMembers * (dashboardData.fee || 0);
   const remainingAmount = targetAmount - (dashboardData.totalAmount || 0);
-  const avgPaymentRate = dashboardData.paymentRate || 0;
 
   return (
     <div className="dashboard-page">
