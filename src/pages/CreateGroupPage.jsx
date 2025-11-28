@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Button from '../components/common/Button';
-import excelFormatImage from '../assets/excel.png'; // 엑셀 양식 이미지 import
+import excelFormatImage from '../assets/images/excel.png'; 
 import './CreateGroupPage.css';
 
 const CreateGroupPage = () => {
