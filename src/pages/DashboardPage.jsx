@@ -357,9 +357,18 @@ const DashboardPage = () => {
       return;
     }
 
-    // 사용자 이름 파싱
+    // 사용자 이름 파싱 (UTF-8 안전한 디코딩)
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      const payload = JSON.parse(jsonPayload);
+      console.log('JWT payload:', payload);  // 디버깅용
       setUserName(payload.name || '회원');
     } catch (error) {
       console.error('토큰 파싱 실패:', error);
@@ -849,7 +858,7 @@ const DashboardPage = () => {
         <div className="modal-overlay" onClick={() => setIsStartModalOpen(false)}>
           <div className="modal-content cycle-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>🚀 회비 수금 시작</h3>
+              <h3>회비 수금 시작</h3>
               <button className="modal-close" onClick={() => setIsStartModalOpen(false)}>
                 <Icons.X />
               </button>
@@ -876,15 +885,15 @@ const DashboardPage = () => {
               
               <div className="cycle-summary">
                 <div className="summary-item">
-                  <span className="summary-label">📋 대상 멤버</span>
+                  <span className="summary-label">대상 멤버</span>
                   <span className="summary-value">{dashboardData.totalMembers}명</span>
                 </div>
                 <div className="summary-item">
-                  <span className="summary-label">💰 1인당 회비</span>
+                  <span className="summary-label">1인당 회비</span>
                   <span className="summary-value">{(dashboardData.fee || 0).toLocaleString()}원</span>
                 </div>
                 <div className="summary-item summary-item--highlight">
-                  <span className="summary-label">🎯 목표 금액</span>
+                  <span className="summary-label">목표 금액</span>
                   <span className="summary-value">
                     {(dashboardData.totalMembers * (dashboardData.fee || 0)).toLocaleString()}원
                   </span>
@@ -892,8 +901,7 @@ const DashboardPage = () => {
               </div>
               
               <div className="info-box">
-                <p>💡 수금을 시작하면 모든 멤버에게 납부 대기 상태가 생성되고,<br/>
-                입금 알림이 자동으로 매칭됩니다.</p>
+                <p>💡 수금을 시작하면 모든 멤버에게 납부 대기 상태가 생성되고,입금 알림이 자동으로 매칭됩니다.</p>
               </div>
             </div>
             
