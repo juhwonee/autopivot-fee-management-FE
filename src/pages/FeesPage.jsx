@@ -3,11 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import './FeesPage.css';
 
-// ✨ groupId 유효성 검증 유틸리티 함수
-const isValidGroupId = (groupId) => {
-  return groupId && groupId !== 'undefined' && groupId !== 'null';
-};
-
 // 🎨 SVG 아이콘 컴포넌트들
 const Icons = {
   ArrowLeft: () => (
@@ -137,6 +132,13 @@ const Icons = {
       <line x1="12" y1="16" x2="12" y2="12"/>
       <line x1="12" y1="8" x2="12.01" y2="8"/>
     </svg>
+  ),
+
+  Bell: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+    </svg>
   )
 };
 
@@ -149,6 +151,7 @@ const FeesPage = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('');
   const [availablePeriods, setAvailablePeriods] = useState([]);
   const [activeCycle, setActiveCycle] = useState(null);
+  const [currentGroupId, setCurrentGroupId] = useState(null);
   
   const [isSmsModalOpen, setIsSmsModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
@@ -162,6 +165,24 @@ const FeesPage = () => {
   const [confirmMember, setConfirmMember] = useState(null);
   const [isConfirming, setIsConfirming] = useState(false);
 
+  // groupId 초기화
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      navigate('/login', { replace: true });
+      return;
+    }
+
+    const groupId = localStorage.getItem('currentGroupId');
+    if (!groupId || groupId === 'undefined' || groupId === 'null') {
+      navigate('/select-group', { replace: true });
+      return;
+    }
+
+    setCurrentGroupId(groupId);
+  }, [navigate]);
+
+  // 기간 목록 초기화
   useEffect(() => {
     const periods = [];
     const now = new Date();
@@ -178,11 +199,10 @@ const FeesPage = () => {
     setSelectedPeriod(periods[0].value);
   }, []);
 
-  const fetchActiveCycle = useCallback(async () => {
+  const fetchActiveCycle = useCallback(async (groupId) => {
+    if (!groupId) return;
+    
     try {
-      const groupId = localStorage.getItem('currentGroupId');
-      if (!isValidGroupId(groupId)) return;
-
       const response = await fetch(
         `https://seongchan-spring.store/api/groups/${groupId}/payment-cycles/active`,
         {
@@ -192,26 +212,28 @@ const FeesPage = () => {
         }
       );
 
-      if (!response.ok) throw new Error('수금 기간 조회 실패');
+      if (!response.ok) {
+        if (response.status === 404) {
+          setActiveCycle({ hasActiveCycle: false });
+          return;
+        }
+        throw new Error('수금 기간 조회 실패');
+      }
 
       const data = await response.json();
       setActiveCycle(data);
     } catch (error) {
       console.error('수금 기간 조회 오류:', error);
+      setActiveCycle({ hasActiveCycle: false });
     }
   }, []);
 
-  const fetchFeesData = useCallback(async (showLoading = true) => {
+  const fetchFeesData = useCallback(async (groupId, showLoading = true) => {
+    if (!groupId || !selectedPeriod) return;
+    
     try {
       if (showLoading) setIsLoading(true);
       else setIsRefreshing(true);
-      
-      const groupId = localStorage.getItem('currentGroupId');
-      
-      if (!isValidGroupId(groupId)) {
-        navigate('/select-group', { replace: true });
-        return;
-      }
       
       const response = await fetch(
         `https://seongchan-spring.store/api/groups/${groupId}/fees?period=${selectedPeriod}`,
@@ -226,7 +248,7 @@ const FeesPage = () => {
 
       const data = await response.json();
       setFeesData(data);
-      await fetchActiveCycle();
+      await fetchActiveCycle(groupId);
       
     } catch (error) {
       console.error('회비 데이터 로딩 오류:', error);
@@ -235,17 +257,19 @@ const FeesPage = () => {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [navigate, selectedPeriod, fetchActiveCycle]);
+  }, [selectedPeriod, fetchActiveCycle]);
 
   useEffect(() => {
-    if (selectedPeriod) {
-      fetchFeesData(true);
+    if (currentGroupId && selectedPeriod) {
+      fetchFeesData(currentGroupId, true);
     }
-  }, [selectedPeriod, fetchFeesData]);
+  }, [currentGroupId, selectedPeriod, fetchFeesData]);
 
   const handleRefresh = () => {
-    fetchFeesData(false);
-    toast.success('새로고침 완료!');
+    if (currentGroupId) {
+      fetchFeesData(currentGroupId, false);
+      toast.success('새로고침 완료!');
+    }
   };
 
   const openSmsModal = (member) => {
@@ -294,8 +318,8 @@ const FeesPage = () => {
   };
 
   const openBulkSmsModal = () => {
-    const unpaidMembers = feesData?.members?.filter(m => m.status !== 'PAID') || [];
-    if (unpaidMembers.length === 0) {
+    const unpaidMembersList = feesData?.members?.filter(m => m.status !== 'PAID') || [];
+    if (unpaidMembersList.length === 0) {
       toast.error('미납 회원이 없습니다.');
       return;
     }
@@ -371,7 +395,9 @@ const FeesPage = () => {
       toast.success(`${confirmMember.name}님의 납부를 확인했습니다.`);
       setIsConfirmModalOpen(false);
       setConfirmMember(null);
-      fetchFeesData(false);
+      if (currentGroupId) {
+        fetchFeesData(currentGroupId, false);
+      }
       
     } catch (error) {
       console.error('납부 확인 오류:', error);
@@ -418,6 +444,7 @@ const FeesPage = () => {
     <div className="fees-page">
       <div className="fees-content">
         
+        {/* 헤더 */}
         <div className="fees-header">
           <div className="header-left">
             <button className="back-btn" onClick={() => navigate('/dashboard')}>
@@ -454,6 +481,7 @@ const FeesPage = () => {
           </div>
         </div>
 
+        {/* 수금 없음 안내 */}
         {hasNoCycleData && isCurrentPeriod && hasNoActiveCycle ? (
           <div className="no-cycle-notice">
             <div className="notice-content">
@@ -485,6 +513,7 @@ const FeesPage = () => {
           </div>
         ) : (
           <>
+            {/* 히어로 카드 */}
             <div className="stats-hero">
               <div className="stats-hero-main">
                 {activeCycle?.hasActiveCycle && activeCycle.period === selectedPeriod && (
@@ -507,15 +536,20 @@ const FeesPage = () => {
                   <span className="total-count">총 {feesData?.totalMembers || 0}명</span>
                 </div>
               </div>
-              
-              {unpaidMembers.length > 0 && (
-                <button className="bulk-sms-btn" onClick={openBulkSmsModal}>
-                  <Icons.Send />
-                  미납자 전체 알림 ({unpaidMembers.length}명)
-                </button>
-              )}
             </div>
 
+            {/* ✅ 미납자 알림 버튼 - 히어로 카드 밖으로 분리 */}
+            {unpaidMembers.length > 0 && (
+              <div className="bulk-action-container">
+                <button className="bulk-sms-btn" onClick={openBulkSmsModal}>
+                  <Icons.Bell />
+                  <span>미납자 전체 알림 보내기</span>
+                  <span className="bulk-count">{unpaidMembers.length}명</span>
+                </button>
+              </div>
+            )}
+
+            {/* 통계 카드 */}
             <div className="stats-grid">
               <div className="stat-card">
                 <div className="stat-icon stat-icon--collected">
@@ -566,7 +600,9 @@ const FeesPage = () => {
               </div>
             </div>
 
+            {/* 멤버 목록 */}
             <div className="members-grid">
+              {/* 미납 회원 */}
               <div className="members-section members-section--unpaid">
                 <div className="section-header">
                   <h3>미납 회원</h3>
@@ -632,6 +668,7 @@ const FeesPage = () => {
                 )}
               </div>
 
+              {/* 납부 완료 */}
               <div className="members-section members-section--paid">
                 <div className="section-header">
                   <h3>납부 완료</h3>
@@ -676,6 +713,7 @@ const FeesPage = () => {
         )}
       </div>
 
+      {/* 개인 SMS 모달 */}
       {isSmsModalOpen && selectedMember && (
         <div className="modal-overlay" onClick={() => setIsSmsModalOpen(false)}>
           <div className="modal-content sms-modal" onClick={e => e.stopPropagation()}>
@@ -728,6 +766,7 @@ const FeesPage = () => {
         </div>
       )}
 
+      {/* 일괄 SMS 모달 */}
       {isBulkSmsModalOpen && (
         <div className="modal-overlay" onClick={() => setIsBulkSmsModalOpen(false)}>
           <div className="modal-content sms-modal" onClick={e => e.stopPropagation()}>
@@ -784,6 +823,7 @@ const FeesPage = () => {
         </div>
       )}
 
+      {/* 납부 확인 모달 */}
       {isConfirmModalOpen && confirmMember && (
         <div className="modal-overlay" onClick={() => setIsConfirmModalOpen(false)}>
           <div className="modal-content confirm-modal" onClick={e => e.stopPropagation()}>
