@@ -1095,4 +1095,672 @@ body {
   .quick-questions {
     display: none;
   }
+}/* ═══════════════════════════════════════════════════════════════════════════
+   🔄 Payment Cycle - 수금 시작/종료 관련 스타일
+   DashboardPage.css에 추가
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Cycle Status Badge in Hero */
+.cycle-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+}
+
+.cycle-status-badge--active {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.cycle-status-badge--waiting {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  opacity: 0.9;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.2); }
+  50% { box-shadow: 0 0 12px 4px rgba(255, 255, 255, 0.3); }
+}
+
+/* Cycle Action Button */
+.cycle-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: all 0.25s;
+  margin-top: var(--space-lg);
+}
+
+.cycle-action-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.cycle-action-btn--start {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(52, 211, 153, 0.2));
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+.cycle-action-btn--start:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(52, 211, 153, 0.3));
+}
+
+.cycle-action-btn--end {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(248, 113, 113, 0.2));
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.cycle-action-btn--end:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(248, 113, 113, 0.3));
+}
+
+/* Cycle Modal */
+.cycle-modal {
+  max-width: 460px;
+}
+
+.cycle-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--slate-200);
+}
+
+.cycle-modal .modal-header h3 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--slate-800);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--slate-400);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: var(--slate-100);
+  color: var(--slate-600);
+}
+
+.cycle-modal .modal-body {
+  padding: var(--space-xl);
+}
+
+/* Form Group */
+.form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--slate-700);
+  margin-bottom: 8px;
+}
+
+.form-group input[type="month"],
+.form-group input[type="datetime-local"] {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  color: var(--slate-800);
+  outline: none;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  background: white;
+}
+
+.form-group input:focus {
+  border-color: var(--primary-400);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Info Box */
+.cycle-info-box {
+  padding: var(--space-md);
+  background: var(--primary-50);
+  border: 1px solid var(--primary-100);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-lg);
+}
+
+.cycle-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.cycle-info-row:not(:last-child) {
+  border-bottom: 1px solid var(--primary-100);
+}
+
+.cycle-info-row .label {
+  font-size: 13px;
+  color: var(--slate-600);
+}
+
+.cycle-info-row .value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--slate-800);
+}
+
+/* End Cycle Warning */
+.end-cycle-warning {
+  padding: var(--space-md);
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-md);
+  margin-top: var(--space-lg);
+}
+
+.end-cycle-warning p {
+  font-size: 13px;
+  color: #991b1b;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.end-cycle-warning p svg {
+  flex-shrink: 0;
+}
+
+/* End Cycle Stats */
+.end-cycle-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.end-stat-card {
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.end-stat-card--paid {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.end-stat-card--unpaid {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.end-stat-card .stat-number {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.end-stat-card--paid .stat-number {
+  color: #16a34a;
+}
+
+.end-stat-card--unpaid .stat-number {
+  color: #dc2626;
+}
+
+.end-stat-card .stat-label {
+  font-size: 12px;
+  color: var(--slate-600);
+}
+
+/* Total Collected */
+.total-collected {
+  text-align: center;
+  padding: var(--space-lg);
+  background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-lg);
+}
+
+.total-collected .label {
+  font-size: 13px;
+  color: var(--slate-600);
+  margin-bottom: 4px;
+}
+
+.total-collected .amount {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--primary-700);
+}
+
+/* Modal Footer */
+.cycle-modal .modal-footer {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-xl);
+  background: var(--slate-50);
+  border-top: 1px solid var(--slate-200);
+}
+
+.btn-start-cycle {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-start-cycle:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.3);
+}
+
+.btn-start-cycle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-end-cycle {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-end-cycle:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
+}
+
+.btn-end-cycle:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive for Cycle Modals */
+@media (max-width: 480px) {
+  .cycle-modal {
+    width: 95%;
+    max-width: none;
+  }
+  
+  .end-cycle-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .total-collected .amount {
+    font-size: 26px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   🎯 Cycle Badge - 히어로 카드 내 수금 상태 배지
+   ═══════════════════════════════════════════════════════════════════════════ */
+.cycle-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+}
+
+.cycle-badge--active {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #a7f3d0;
+}
+
+.cycle-badge--inactive {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Cycle Info in Hero */
+.cycle-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: var(--space-sm);
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.cycle-period, .cycle-due {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Cycle Actions */
+.cycle-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.btn-cycle-start, .btn-cycle-end {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn-cycle-start {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: white;
+}
+
+.btn-cycle-start:hover {
+  background: rgba(16, 185, 129, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-cycle-end {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: white;
+}
+
+.btn-cycle-end:hover {
+  background: rgba(239, 68, 68, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Start Cycle Call-to-Action */
+.start-cycle-cta {
+  margin-top: var(--space-md);
+  text-align: center;
+}
+
+.start-cycle-cta p {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: var(--space-sm);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   📝 Cycle Modal Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+.cycle-modal {
+  max-width: 440px;
+}
+
+.cycle-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--slate-200);
+  background: var(--slate-50);
+}
+
+.cycle-modal .modal-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--slate-800);
+  margin: 0;
+}
+
+.cycle-modal .modal-body {
+  padding: var(--space-xl);
+}
+
+.cycle-modal .modal-footer {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-xl);
+  background: var(--slate-50);
+  border-top: 1px solid var(--slate-200);
+}
+
+/* Form Group */
+.form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--slate-700);
+  margin-bottom: 8px;
+}
+
+.form-group input[type="month"],
+.form-group input[type="datetime-local"],
+.form-group input[type="text"] {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  color: var(--slate-800);
+  outline: none;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  background: white;
+}
+
+.form-group input:focus {
+  border-color: var(--primary-400);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Cycle Summary */
+.cycle-summary {
+  background: var(--slate-50);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--slate-200);
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.summary-item--highlight {
+  background: var(--primary-50);
+  margin: 10px -12px -12px;
+  padding: 12px;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.summary-label {
+  font-size: 13px;
+  color: var(--slate-600);
+}
+
+.summary-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--slate-800);
+}
+
+/* Info Box */
+.info-box {
+  background: var(--primary-50);
+  border: 1px solid var(--primary-100);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.info-box p {
+  font-size: 13px;
+  color: var(--primary-700);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Warning Box */
+.warning-box {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.warning-box p {
+  font-size: 13px;
+  color: #991b1b;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* End Cycle Info */
+.end-cycle-info {
+  text-align: center;
+}
+
+.period-text {
+  font-size: 16px;
+  color: var(--slate-700);
+  margin-bottom: var(--space-lg);
+}
+
+.period-text strong {
+  color: var(--slate-900);
+}
+
+.end-summary {
+  background: var(--slate-50);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 14px;
+  border-bottom: 1px solid var(--slate-200);
+}
+
+.summary-row:last-child {
+  border-bottom: none;
+}
+
+.text-success {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.text-danger {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* Confirm Button */
+.btn-confirm {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-confirm:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.3);
+}
+
+.btn-confirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Danger Button */
+.btn-danger {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-danger:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

@@ -86,6 +86,35 @@ const Icons = {
       <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
       <line x1="12" x2="12" y1="19" y2="22"/>
     </svg>
+  ),
+
+  // ✅ 새로 추가: 플레이 (수금 시작)
+  Play: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="5 3 19 12 5 21 5 3"/>
+    </svg>
+  ),
+
+  // ✅ 새로 추가: 정지 (수금 종료)
+  Square: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+    </svg>
+  ),
+
+  // ✅ 새로 추가: X (닫기)
+  X: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  ),
+
+  // ✅ 새로 추가: 체크
+  Check: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
   )
 };
 
@@ -239,103 +268,68 @@ const InlineChatPanel = ({ groupId }) => {
   const formatTime = (date) => {
     return date.toLocaleTimeString('ko-KR', {
       hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
+      minute: '2-digit'
     });
   };
 
-  const handleQuickQuestion = (text) => {
-    handleSendMessage(text);
-  };
-
   return (
-    <div className="inline-chat-panel">
-      {/* 헤더 - 컴팩트 */}
-      <div className="chat-panel-header">
-        <div className="chat-panel-title">
-          <div className="chat-bot-avatar">🤖</div>
-          <div>
-            <h4>AI 도우미 두레</h4>
-            <span className="chat-status">● Online</span>
-          </div>
-        </div>
-      </div>
-
-      {/* 메시지 영역 - 확장 */}
-      <div className="chat-messages-area">
-        {messages.map((message) => (
-          <div 
-            key={message.id} 
-            className={`chat-message ${message.sender === 'user' ? 'chat-message--user' : 'chat-message--bot'}`}
-          >
-            {message.sender === 'bot' && (
-              <div className="message-avatar bot-avatar">🤖</div>
-            )}
-            <div className="message-content">
-              <div className="message-bubble">
-                {message.text.split('\n').map((line, i) => (
-                  <React.Fragment key={i}>
-                    {line}
-                    {i < message.text.split('\n').length - 1 && <br />}
-                  </React.Fragment>
-                ))}
-              </div>
-              <span className="message-time">{formatTime(message.timestamp)}</span>
+    <div className="glass-panel chat-panel">
+      <h3 className="panel-title">🤖 AI 도우미</h3>
+      
+      <div className="chat-messages">
+        {messages.map(msg => (
+          <div key={msg.id} className={`chat-message ${msg.sender}`}>
+            <div className="message-bubble">
+              <p>{msg.text}</p>
+              <span className="message-time">{formatTime(msg.timestamp)}</span>
             </div>
           </div>
         ))}
-
+        
         {isLoading && (
-          <div className="chat-message chat-message--bot">
-            <div className="message-avatar bot-avatar">🤖</div>
-            <div className="message-content">
-              <div className="message-bubble typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
+          <div className="chat-message bot">
+            <div className="message-bubble typing">
+              <span className="typing-dot"></span>
+              <span className="typing-dot"></span>
+              <span className="typing-dot"></span>
             </div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* 추천 질문 */}
-      {!isLoading && messages.length <= 3 && (
-        <div className="quick-questions">
-          {quickQuestions.map((q, idx) => (
-            <button 
-              key={idx} 
-              className="quick-question-btn"
-              onClick={() => handleQuickQuestion(q.text)}
-            >
-              <span>{q.icon}</span>
-              {q.text}
-            </button>
-          ))}
-        </div>
-      )}
+      <div className="quick-questions">
+        {quickQuestions.map((q, i) => (
+          <button 
+            key={i}
+            className="quick-question-btn"
+            onClick={() => handleSendMessage(q.text)}
+            disabled={isLoading}
+          >
+            <span>{q.icon}</span> {q.text}
+          </button>
+        ))}
+      </div>
 
-      {/* 입력 영역 - 컴팩트 */}
-      <div className="chat-input-area">
-        <button 
-          className={`chat-voice-btn ${isListening ? 'listening' : ''}`}
-          onClick={toggleVoiceInput}
-          title="음성 입력"
-        >
-          <Icons.Mic />
-        </button>
+      <div className="chat-input-container">
         <input
           ref={inputRef}
           type="text"
-          placeholder="궁금한 내용을 입력하세요..."
+          placeholder="메시지를 입력하세요..."
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onKeyPress={handleKeyPress}
           disabled={isLoading}
         />
         <button 
-          className="chat-send-btn"
+          className={`voice-btn ${isListening ? 'listening' : ''}`}
+          onClick={toggleVoiceInput}
+          disabled={isLoading}
+        >
+          <Icons.Mic />
+        </button>
+        <button 
+          className="send-btn"
           onClick={() => handleSendMessage(inputText)}
           disabled={isLoading || !inputText.trim()}
         >
@@ -349,50 +343,68 @@ const InlineChatPanel = ({ groupId }) => {
 const DashboardPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  
-  const [userName, setUserName] = useState('회원');
   const [dashboardData, setDashboardData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [lastUpdated, setLastUpdated] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const [userName, setUserName] = useState('');
 
-  // ✅ URL에서 token 처리 및 인증/그룹 체크
+  // ✅ 새로 추가: 수금 기간 관련 상태
+  const [activeCycle, setActiveCycle] = useState(null);
+  const [isStartModalOpen, setIsStartModalOpen] = useState(false);
+  const [isEndModalOpen, setIsEndModalOpen] = useState(false);
+  const [cycleForm, setCycleForm] = useState({
+    period: '',
+    dueDate: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 사용자 이름 가져오기
   useEffect(() => {
-    const tokenFromUrl = searchParams.get('token');
-    if (tokenFromUrl) {
-      localStorage.setItem('accessToken', tokenFromUrl);
-      window.history.replaceState({}, '', '/dashboard');
-    }
-
     const token = localStorage.getItem('accessToken');
     if (!token) {
-      navigate('/login', { replace: true });
+      navigate('/login');
       return;
     }
 
-    const currentGroupId = localStorage.getItem('currentGroupId');
-    if (!isValidGroupId(currentGroupId)) {
-      navigate('/select-group', { replace: true });
-      return;
+    // URL에서 groupId 처리
+    const groupIdFromUrl = searchParams.get('groupId');
+    if (groupIdFromUrl) {
+      localStorage.setItem('currentGroupId', groupIdFromUrl);
     }
 
     try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const decodedAscii = atob(base64);
-      const utf8String = decodeURIComponent(
-        Array.prototype.map.call(
-          decodedAscii, 
-          (c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-        ).join('')
-      );
-      const payload = JSON.parse(utf8String);
+      const payload = JSON.parse(atob(token.split('.')[1]));
       setUserName(payload.name || '회원');
     } catch (error) {
       console.error('토큰 파싱 실패:', error);
       setUserName('회원');
     }
   }, [navigate, searchParams]);
+
+  // ✅ 새로 추가: 수금 기간 조회
+  const fetchActiveCycle = useCallback(async () => {
+    try {
+      const groupId = localStorage.getItem('currentGroupId');
+      if (!isValidGroupId(groupId)) return;
+
+      const response = await fetch(
+        `https://seongchan-spring.store/api/groups/${groupId}/payment-cycles/active`,
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          }
+        }
+      );
+
+      if (!response.ok) throw new Error('수금 기간 조회 실패');
+
+      const data = await response.json();
+      setActiveCycle(data);
+    } catch (error) {
+      console.error('수금 기간 조회 오류:', error);
+    }
+  }, []);
 
   // 대시보드 데이터 가져오기
   const fetchDashboardData = useCallback(async (showLoading = true) => {
@@ -422,6 +434,9 @@ const DashboardPage = () => {
       setDashboardData(data);
       setLastUpdated(new Date(data.lastUpdated));
       
+      // 수금 기간도 함께 조회
+      await fetchActiveCycle();
+      
     } catch (error) {
       console.error('데이터 로딩 오류:', error);
       toast.error('데이터를 불러오는데 실패했습니다.');
@@ -429,7 +444,7 @@ const DashboardPage = () => {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [navigate]);
+  }, [navigate, fetchActiveCycle]);
 
   // 초기 데이터 로드
   useEffect(() => {
@@ -486,6 +501,97 @@ const DashboardPage = () => {
     }
   };
 
+  // ✅ 새로 추가: 수금 시작 모달 열기
+  const openStartModal = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const lastDay = new Date(year, now.getMonth() + 1, 0).getDate();
+    
+    setCycleForm({
+      period: `${year}-${month}`,
+      dueDate: `${year}-${month}-${lastDay}T23:59`
+    });
+    setIsStartModalOpen(true);
+  };
+
+  // ✅ 새로 추가: 수금 시작 처리
+  const handleStartCycle = async () => {
+    if (!cycleForm.period || !cycleForm.dueDate) {
+      toast.error('모든 항목을 입력해주세요.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const groupId = localStorage.getItem('currentGroupId');
+      
+      const response = await fetch(
+        `https://seongchan-spring.store/api/groups/${groupId}/payment-cycles/start`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          },
+          body: JSON.stringify({
+            period: cycleForm.period,
+            dueDate: cycleForm.dueDate + ':00'
+          })
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || '수금 시작 실패');
+      }
+
+      toast.success('회비 수금이 시작되었습니다!');
+      setIsStartModalOpen(false);
+      await fetchDashboardData(false);
+      
+    } catch (error) {
+      console.error('수금 시작 오류:', error);
+      toast.error(error.message || '수금 시작에 실패했습니다.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // ✅ 새로 추가: 수금 종료 처리
+  const handleEndCycle = async () => {
+    if (!activeCycle?.cycleId) return;
+
+    setIsSubmitting(true);
+
+    try {
+      const groupId = localStorage.getItem('currentGroupId');
+      
+      const response = await fetch(
+        `https://seongchan-spring.store/api/groups/${groupId}/payment-cycles/${activeCycle.cycleId}/close`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          }
+        }
+      );
+
+      if (!response.ok) throw new Error('수금 종료 실패');
+
+      toast.success('회비 수금이 종료되었습니다.');
+      setIsEndModalOpen(false);
+      await fetchDashboardData(false);
+      
+    } catch (error) {
+      console.error('수금 종료 오류:', error);
+      toast.error('수금 종료에 실패했습니다.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   // 로딩 화면
   if (isLoading || !dashboardData) {
     return (
@@ -527,6 +633,13 @@ const DashboardPage = () => {
   const targetAmount = dashboardData.totalMembers * (dashboardData.fee || 0);
   const remainingAmount = targetAmount - (dashboardData.totalAmount || 0);
 
+  // 기간 포맷 (2025-01 → 2025년 1월)
+  const formatPeriod = (period) => {
+    if (!period) return '';
+    const [year, month] = period.split('-');
+    return `${year}년 ${parseInt(month)}월`;
+  };
+
   return (
     <div className="dashboard-page">
       <div className="dashboard-content">
@@ -561,37 +674,84 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* 2. 히어로 카드 */}
+        {/* 2. 히어로 카드 - 수금 상태 표시 추가 */}
         <div className="hero-card">
           <div className="hero-header">
             <span className="hero-title">이번 달 회비 납부율</span>
+            
+            {/* ✅ 수금 상태 배지 */}
+            {activeCycle?.hasActiveCycle ? (
+              <span className="cycle-badge cycle-badge--active">
+                🟢 수금 진행 중
+              </span>
+            ) : (
+              <span className="cycle-badge cycle-badge--inactive">
+                ⚪ 수금 대기
+              </span>
+            )}
           </div>
           
           <div className="hero-content">
             <div className="payment-rate-big">
-              {dashboardData.paymentRate}%
+              {activeCycle?.hasActiveCycle ? `${activeCycle.paymentRate || 0}%` : '--'}
             </div>
             <div className="progress-container">
               <div 
                 className="progress-bar" 
-                style={{ width: `${dashboardData.paymentRate}%` }}
+                style={{ width: `${activeCycle?.paymentRate || 0}%` }}
               ></div>
             </div>
             
-            <div className="hero-stats-row">
-              <div className="stat-pill">
-                <label>납부 완료</label>
-                <span>{dashboardData.paidMembers}명</span>
+            {/* ✅ 수금 기간 정보 또는 시작 버튼 */}
+            {activeCycle?.hasActiveCycle ? (
+              <>
+                <div className="cycle-info">
+                  <span className="cycle-period">
+                    📅 {formatPeriod(activeCycle.period)}
+                  </span>
+                  <span className="cycle-due">
+                    마감: {new Date(activeCycle.dueDate).toLocaleDateString('ko-KR')}
+                  </span>
+                </div>
+                
+                <div className="hero-stats-row">
+                  <div className="stat-pill">
+                    <label>납부 완료</label>
+                    <span>{activeCycle.paidMembers || 0}명</span>
+                  </div>
+                  <div className="stat-pill">
+                    <label>미납</label>
+                    <span>{activeCycle.unpaidMembers || 0}명</span>
+                  </div>
+                  <div className="stat-pill stat-pill--highlight">
+                    <label>총 모인 금액</label>
+                    <span>{(activeCycle.totalCollected || 0).toLocaleString()}원</span>
+                  </div>
+                </div>
+
+                <button 
+                  className="cycle-action-btn cycle-action-btn--end"
+                  onClick={() => setIsEndModalOpen(true)}
+                >
+                  <Icons.Square />
+                  <span>수금 종료하기</span>
+                </button>
+              </>
+            ) : (
+              <div className="no-cycle-container">
+                <p className="no-cycle-message">
+                  아직 이번 달 수금을 시작하지 않았어요.<br/>
+                  수금을 시작하면 입금 알림이 자동으로 매칭됩니다.
+                </p>
+                <button 
+                  className="cycle-action-btn cycle-action-btn--start"
+                  onClick={openStartModal}
+                >
+                  <Icons.Play />
+                  <span>회비 수금 시작하기</span>
+                </button>
               </div>
-              <div className="stat-pill">
-                <label>미납</label>
-                <span>{dashboardData.unpaidMembers}명</span>
-              </div>
-              <div className="stat-pill stat-pill--highlight">
-                <label>총 모인 금액</label>
-                <span>{dashboardData.totalAmount?.toLocaleString()}원</span>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -626,7 +786,7 @@ const DashboardPage = () => {
                 <div className="status-info">
                   <span className="status-label">총 목표 금액</span>
                   <strong className="status-value">
-                    {targetAmount?.toLocaleString() || 0}원
+                    {(activeCycle?.targetAmount || targetAmount)?.toLocaleString() || 0}원
                   </strong>
                 </div>
               </div>
@@ -636,7 +796,9 @@ const DashboardPage = () => {
                 </div>
                 <div className="status-info">
                   <span className="status-label">전체 멤버</span>
-                  <strong className="status-value">{dashboardData.totalMembers}명</strong>
+                  <strong className="status-value">
+                    {activeCycle?.totalMembers || dashboardData.totalMembers}명
+                  </strong>
                 </div>
               </div>
               <div className="status-item">
@@ -646,7 +808,10 @@ const DashboardPage = () => {
                 <div className="status-info">
                   <span className="status-label">미수금 잔액</span>
                   <strong className="status-value status-value--warning">
-                    {remainingAmount > 0 ? remainingAmount.toLocaleString() : 0}원
+                    {activeCycle?.hasActiveCycle 
+                      ? ((activeCycle.targetAmount || 0) - (activeCycle.totalCollected || 0)).toLocaleString()
+                      : remainingAmount > 0 ? remainingAmount.toLocaleString() : 0
+                    }원
                   </strong>
                 </div>
               </div>
@@ -657,7 +822,7 @@ const DashboardPage = () => {
                 <div className="status-info">
                   <span className="status-label">1인당 회비</span>
                   <strong className="status-value">
-                    {(dashboardData.fee || 0).toLocaleString()}원
+                    {(activeCycle?.monthlyFee || dashboardData.fee || 0).toLocaleString()}원
                   </strong>
                 </div>
               </div>
@@ -669,6 +834,135 @@ const DashboardPage = () => {
 
         </div>
       </div>
+
+      {/* ✅ 수금 시작 모달 */}
+      {isStartModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsStartModalOpen(false)}>
+          <div className="modal-content cycle-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>🚀 회비 수금 시작</h3>
+              <button className="modal-close" onClick={() => setIsStartModalOpen(false)}>
+                <Icons.X />
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="form-group">
+                <label>수금 기간</label>
+                <input
+                  type="month"
+                  value={cycleForm.period}
+                  onChange={(e) => setCycleForm({...cycleForm, period: e.target.value})}
+                />
+              </div>
+              
+              <div className="form-group">
+                <label>납부 마감일</label>
+                <input
+                  type="datetime-local"
+                  value={cycleForm.dueDate}
+                  onChange={(e) => setCycleForm({...cycleForm, dueDate: e.target.value})}
+                />
+              </div>
+              
+              <div className="cycle-summary">
+                <div className="summary-item">
+                  <span className="summary-label">📋 대상 멤버</span>
+                  <span className="summary-value">{dashboardData.totalMembers}명</span>
+                </div>
+                <div className="summary-item">
+                  <span className="summary-label">💰 1인당 회비</span>
+                  <span className="summary-value">{(dashboardData.fee || 0).toLocaleString()}원</span>
+                </div>
+                <div className="summary-item summary-item--highlight">
+                  <span className="summary-label">🎯 목표 금액</span>
+                  <span className="summary-value">
+                    {(dashboardData.totalMembers * (dashboardData.fee || 0)).toLocaleString()}원
+                  </span>
+                </div>
+              </div>
+              
+              <div className="info-box">
+                <p>💡 수금을 시작하면 모든 멤버에게 납부 대기 상태가 생성되고,<br/>
+                입금 알림이 자동으로 매칭됩니다.</p>
+              </div>
+            </div>
+            
+            <div className="modal-footer">
+              <button 
+                className="btn-cancel" 
+                onClick={() => setIsStartModalOpen(false)}
+              >
+                취소
+              </button>
+              <button 
+                className="btn-confirm" 
+                onClick={handleStartCycle}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? '처리 중...' : '수금 시작하기'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ 수금 종료 모달 */}
+      {isEndModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsEndModalOpen(false)}>
+          <div className="modal-content cycle-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>⏹️ 회비 수금 종료</h3>
+              <button className="modal-close" onClick={() => setIsEndModalOpen(false)}>
+                <Icons.X />
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="end-cycle-info">
+                <p className="period-text">
+                  <strong>{formatPeriod(activeCycle?.period)}</strong> 수금을 종료합니다.
+                </p>
+                
+                <div className="end-summary">
+                  <div className="summary-row">
+                    <span>납부 완료</span>
+                    <span className="text-success">{activeCycle?.paidMembers || 0}명</span>
+                  </div>
+                  <div className="summary-row">
+                    <span>미납 (연체 처리)</span>
+                    <span className="text-danger">{activeCycle?.unpaidMembers || 0}명</span>
+                  </div>
+                  <div className="summary-row">
+                    <span>총 수금액</span>
+                    <span>{(activeCycle?.totalCollected || 0).toLocaleString()}원</span>
+                  </div>
+                </div>
+                
+                <div className="warning-box">
+                  <p>⚠️ 수금 종료 시 미납 회원은 <strong>연체(OVERDUE)</strong> 상태로 변경됩니다.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="modal-footer">
+              <button 
+                className="btn-cancel" 
+                onClick={() => setIsEndModalOpen(false)}
+              >
+                취소
+              </button>
+              <button 
+                className="btn-danger" 
+                onClick={handleEndCycle}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? '처리 중...' : '수금 종료하기'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

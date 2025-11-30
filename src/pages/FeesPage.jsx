@@ -10,7 +10,6 @@ const isValidGroupId = (groupId) => {
 
 // 🎨 SVG 아이콘 컴포넌트들
 const Icons = {
-  // 뒤로가기
   ArrowLeft: () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M19 12H5"/>
@@ -18,7 +17,6 @@ const Icons = {
     </svg>
   ),
   
-  // 새로고침
   Refresh: ({ className }) => (
     <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
@@ -28,7 +26,6 @@ const Icons = {
     </svg>
   ),
   
-  // 달력
   Calendar: () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -38,7 +35,6 @@ const Icons = {
     </svg>
   ),
   
-  // 체크 서클
   CheckCircle: () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
@@ -46,7 +42,6 @@ const Icons = {
     </svg>
   ),
   
-  // 경고 (미납)
   AlertCircle: () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10"/>
@@ -55,7 +50,6 @@ const Icons = {
     </svg>
   ),
   
-  // 연체
   XCircle: () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10"/>
@@ -64,14 +58,12 @@ const Icons = {
     </svg>
   ),
   
-  // 메시지 보내기
   MessageSquare: () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
     </svg>
   ),
   
-  // 전체 메시지
   Send: () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <line x1="22" y1="2" x2="11" y2="13"/>
@@ -79,7 +71,6 @@ const Icons = {
     </svg>
   ),
   
-  // 납부 확인
   UserCheck: () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
@@ -88,7 +79,6 @@ const Icons = {
     </svg>
   ),
   
-  // 동전
   Coins: () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="8" cy="8" r="6"/>
@@ -98,7 +88,6 @@ const Icons = {
     </svg>
   ),
   
-  // 목표
   Target: () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="10"/>
@@ -107,7 +96,6 @@ const Icons = {
     </svg>
   ),
   
-  // 사용자들
   Users: () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
@@ -117,7 +105,6 @@ const Icons = {
     </svg>
   ),
   
-  // 트렌드 업
   TrendingUp: () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
@@ -125,7 +112,6 @@ const Icons = {
     </svg>
   ),
   
-  // X (닫기)
   X: () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <line x1="18" y1="6" x2="6" y2="18"/>
@@ -133,10 +119,23 @@ const Icons = {
     </svg>
   ),
   
-  // 전화
   Phone: () => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+    </svg>
+  ),
+
+  Play: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="5 3 19 12 5 21 5 3"/>
+    </svg>
+  ),
+
+  Info: () => (
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="16" x2="12" y2="12"/>
+      <line x1="12" y1="8" x2="12.01" y2="8"/>
     </svg>
   )
 };
@@ -144,29 +143,25 @@ const Icons = {
 const FeesPage = () => {
   const navigate = useNavigate();
   
-  // 상태 관리
   const [feesData, setFeesData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState('');
   const [availablePeriods, setAvailablePeriods] = useState([]);
+  const [activeCycle, setActiveCycle] = useState(null);
   
-  // 모달 상태
   const [isSmsModalOpen, setIsSmsModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
   const [smsMessage, setSmsMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   
-  // 일괄 메시지 모달
   const [isBulkSmsModalOpen, setIsBulkSmsModalOpen] = useState(false);
   const [bulkSmsMessage, setBulkSmsMessage] = useState('');
   
-  // 납부 확인 모달
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [confirmMember, setConfirmMember] = useState(null);
   const [isConfirming, setIsConfirming] = useState(false);
 
-  // 사용 가능한 기간 목록 생성 (최근 12개월)
   useEffect(() => {
     const periods = [];
     const now = new Date();
@@ -180,10 +175,32 @@ const FeesPage = () => {
       });
     }
     setAvailablePeriods(periods);
-    setSelectedPeriod(periods[0].value); // 현재 월 기본 선택
+    setSelectedPeriod(periods[0].value);
   }, []);
 
-  // 회비 데이터 가져오기
+  const fetchActiveCycle = useCallback(async () => {
+    try {
+      const groupId = localStorage.getItem('currentGroupId');
+      if (!isValidGroupId(groupId)) return;
+
+      const response = await fetch(
+        `https://seongchan-spring.store/api/groups/${groupId}/payment-cycles/active`,
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          }
+        }
+      );
+
+      if (!response.ok) throw new Error('수금 기간 조회 실패');
+
+      const data = await response.json();
+      setActiveCycle(data);
+    } catch (error) {
+      console.error('수금 기간 조회 오류:', error);
+    }
+  }, []);
+
   const fetchFeesData = useCallback(async (showLoading = true) => {
     try {
       if (showLoading) setIsLoading(true);
@@ -209,6 +226,7 @@ const FeesPage = () => {
 
       const data = await response.json();
       setFeesData(data);
+      await fetchActiveCycle();
       
     } catch (error) {
       console.error('회비 데이터 로딩 오류:', error);
@@ -217,22 +235,19 @@ const FeesPage = () => {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [navigate, selectedPeriod]);
+  }, [navigate, selectedPeriod, fetchActiveCycle]);
 
-  // 기간 변경 시 데이터 다시 로드
   useEffect(() => {
     if (selectedPeriod) {
       fetchFeesData(true);
     }
   }, [selectedPeriod, fetchFeesData]);
 
-  // 수동 새로고침
   const handleRefresh = () => {
     fetchFeesData(false);
     toast.success('새로고침 완료!');
   };
 
-  // 개별 SMS 모달 열기
   const openSmsModal = (member) => {
     setSelectedMember(member);
     const unpaidAmount = (feesData?.monthlyFee || 0) - (member.paidAmount || 0);
@@ -241,7 +256,6 @@ const FeesPage = () => {
     setIsSmsModalOpen(true);
   };
 
-  // SMS 발송
   const handleSendSms = async () => {
     if (!selectedMember || !smsMessage.trim()) {
       toast.error('메시지를 입력해주세요.');
@@ -279,7 +293,6 @@ const FeesPage = () => {
     }
   };
 
-  // 일괄 SMS 모달 열기
   const openBulkSmsModal = () => {
     const unpaidMembers = feesData?.members?.filter(m => m.status !== 'PAID') || [];
     if (unpaidMembers.length === 0) {
@@ -291,14 +304,13 @@ const FeesPage = () => {
     setIsBulkSmsModalOpen(true);
   };
 
-  // 일괄 SMS 발송
   const handleBulkSendSms = async () => {
     if (!bulkSmsMessage.trim()) {
       toast.error('메시지를 입력해주세요.');
       return;
     }
     
-    const unpaidMembers = feesData?.members?.filter(m => m.status !== 'PAID') || [];
+    const unpaidMembersList = feesData?.members?.filter(m => m.status !== 'PAID') || [];
     
     setIsSending(true);
     
@@ -310,14 +322,14 @@ const FeesPage = () => {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
         },
         body: JSON.stringify({
-          memberIds: unpaidMembers.map(m => m.memberId),
+          memberIds: unpaidMembersList.map(m => m.memberId),
           message: bulkSmsMessage
         })
       });
 
       if (!response.ok) throw new Error('일괄 SMS 발송 실패');
 
-      toast.success(`${unpaidMembers.length}명에게 메시지를 보냈습니다.`);
+      toast.success(`${unpaidMembersList.length}명에게 메시지를 보냈습니다.`);
       setIsBulkSmsModalOpen(false);
       setBulkSmsMessage('');
       
@@ -329,13 +341,15 @@ const FeesPage = () => {
     }
   };
 
-  // 납부 확인 모달 열기
   const openConfirmModal = (member) => {
+    if (!member.paymentId) {
+      toast.error('이 기간의 수금이 시작되지 않았습니다.');
+      return;
+    }
     setConfirmMember(member);
     setIsConfirmModalOpen(true);
   };
 
-  // 납부 확인 처리
   const handleConfirmPayment = async () => {
     if (!confirmMember) return;
     
@@ -357,7 +371,7 @@ const FeesPage = () => {
       toast.success(`${confirmMember.name}님의 납부를 확인했습니다.`);
       setIsConfirmModalOpen(false);
       setConfirmMember(null);
-      fetchFeesData(false); // 데이터 새로고침
+      fetchFeesData(false);
       
     } catch (error) {
       console.error('납부 확인 오류:', error);
@@ -367,32 +381,23 @@ const FeesPage = () => {
     }
   };
 
-  // 상태별 아이콘 반환
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'PAID':
-        return <Icons.CheckCircle />;
-      case 'OVERDUE':
-        return <Icons.XCircle />;
-      default:
-        return <Icons.AlertCircle />;
+      case 'PAID': return <Icons.CheckCircle />;
+      case 'OVERDUE': return <Icons.XCircle />;
+      default: return <Icons.AlertCircle />;
     }
   };
 
-  // 상태 텍스트 반환
   const getStatusText = (status) => {
     switch (status) {
-      case 'PAID':
-        return '납부 완료';
-      case 'OVERDUE':
-        return '연체';
-      default:
-        return '미납';
+      case 'PAID': return '납부 완료';
+      case 'OVERDUE': return '연체';
+      default: return '미납';
     }
   };
 
-  // 로딩 화면
-  if (isLoading || !feesData) {
+  if (isLoading) {
     return (
       <div className="fees-page">
         <div className="loading-container">
@@ -403,15 +408,16 @@ const FeesPage = () => {
     );
   }
 
-  // 미납 회원 필터
-  const unpaidMembers = feesData.members?.filter(m => m.status !== 'PAID') || [];
-  const paidMembers = feesData.members?.filter(m => m.status === 'PAID') || [];
+  const hasNoCycleData = !feesData?.members || feesData.members.length === 0;
+  const isCurrentPeriod = selectedPeriod === availablePeriods[0]?.value;
+  const hasNoActiveCycle = !activeCycle?.hasActiveCycle;
+  const unpaidMembers = feesData?.members?.filter(m => m.status !== 'PAID') || [];
+  const paidMembers = feesData?.members?.filter(m => m.status === 'PAID') || [];
 
   return (
     <div className="fees-page">
       <div className="fees-content">
         
-        {/* 헤더 */}
         <div className="fees-header">
           <div className="header-left">
             <button className="back-btn" onClick={() => navigate('/dashboard')}>
@@ -419,12 +425,11 @@ const FeesPage = () => {
             </button>
             <div className="header-title">
               <h2>회비 관리</h2>
-              <p>{feesData.groupName}</p>
+              <p>{feesData?.groupName}</p>
             </div>
           </div>
           
           <div className="header-actions">
-            {/* 기간 선택 */}
             <div className="period-selector">
               <Icons.Calendar />
               <select 
@@ -449,198 +454,228 @@ const FeesPage = () => {
           </div>
         </div>
 
-        {/* 메인 통계 카드 */}
-        <div className="stats-hero">
-          <div className="stats-hero-main">
-            <div className="hero-label">
-              {selectedPeriod.replace('-', '년 ')}월 납부율
-            </div>
-            <div className="hero-rate">{feesData.paymentRate}%</div>
-            <div className="hero-progress">
-              <div 
-                className="hero-progress-bar" 
-                style={{ width: `${feesData.paymentRate}%` }}
-              />
-            </div>
-            <div className="hero-detail">
-              <span className="paid-count">{feesData.paidMembers}명 납부</span>
-              <span className="divider">/</span>
-              <span className="total-count">총 {feesData.totalMembers}명</span>
+        {hasNoCycleData && isCurrentPeriod && hasNoActiveCycle ? (
+          <div className="no-cycle-notice">
+            <div className="notice-content">
+              <Icons.Info />
+              <h3>아직 수금이 시작되지 않았어요</h3>
+              <p>
+                대시보드에서 "회비 수금 시작" 버튼을 눌러<br/>
+                이번 달 회비 수금을 시작해주세요.
+              </p>
+              <button 
+                className="go-dashboard-btn"
+                onClick={() => navigate('/dashboard')}
+              >
+                <Icons.Play />
+                대시보드로 이동
+              </button>
             </div>
           </div>
-          
-          {/* 일괄 메시지 버튼 */}
-          {unpaidMembers.length > 0 && (
-            <button className="bulk-sms-btn" onClick={openBulkSmsModal}>
-              <Icons.Send />
-              미납자 전체 알림 ({unpaidMembers.length}명)
-            </button>
-          )}
-        </div>
+        ) : hasNoCycleData ? (
+          <div className="no-cycle-notice">
+            <div className="notice-content">
+              <Icons.Info />
+              <h3>해당 기간의 수금 기록이 없어요</h3>
+              <p>
+                {selectedPeriod.replace('-', '년 ')}월에는<br/>
+                수금이 진행되지 않았습니다.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="stats-hero">
+              <div className="stats-hero-main">
+                {activeCycle?.hasActiveCycle && activeCycle.period === selectedPeriod && (
+                  <span className="cycle-badge-small">🟢 수금 진행 중</span>
+                )}
+                
+                <div className="hero-label">
+                  {selectedPeriod.replace('-', '년 ')}월 납부율
+                </div>
+                <div className="hero-rate">{feesData?.paymentRate || 0}%</div>
+                <div className="hero-progress">
+                  <div 
+                    className="hero-progress-bar" 
+                    style={{ width: `${feesData?.paymentRate || 0}%` }}
+                  />
+                </div>
+                <div className="hero-detail">
+                  <span className="paid-count">{feesData?.paidMembers || 0}명 납부</span>
+                  <span className="divider">/</span>
+                  <span className="total-count">총 {feesData?.totalMembers || 0}명</span>
+                </div>
+              </div>
+              
+              {unpaidMembers.length > 0 && (
+                <button className="bulk-sms-btn" onClick={openBulkSmsModal}>
+                  <Icons.Send />
+                  미납자 전체 알림 ({unpaidMembers.length}명)
+                </button>
+              )}
+            </div>
 
-        {/* 통계 그리드 */}
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-icon stat-icon--collected">
-              <Icons.Coins />
+            <div className="stats-grid">
+              <div className="stat-card">
+                <div className="stat-icon stat-icon--collected">
+                  <Icons.Coins />
+                </div>
+                <div className="stat-info">
+                  <span className="stat-label">모인 금액</span>
+                  <strong className="stat-value">
+                    {feesData?.totalCollected?.toLocaleString() || 0}원
+                  </strong>
+                </div>
+              </div>
+              
+              <div className="stat-card">
+                <div className="stat-icon stat-icon--target">
+                  <Icons.Target />
+                </div>
+                <div className="stat-info">
+                  <span className="stat-label">목표 금액</span>
+                  <strong className="stat-value">
+                    {feesData?.targetAmount?.toLocaleString() || 0}원
+                  </strong>
+                </div>
+              </div>
+              
+              <div className="stat-card">
+                <div className="stat-icon stat-icon--fee">
+                  <Icons.TrendingUp />
+                </div>
+                <div className="stat-info">
+                  <span className="stat-label">월 회비</span>
+                  <strong className="stat-value">
+                    {feesData?.monthlyFee?.toLocaleString() || 0}원
+                  </strong>
+                </div>
+              </div>
+              
+              <div className="stat-card">
+                <div className="stat-icon stat-icon--members">
+                  <Icons.Users />
+                </div>
+                <div className="stat-info">
+                  <span className="stat-label">미납 인원</span>
+                  <strong className="stat-value stat-value--warning">
+                    {feesData?.unpaidMembers || 0}명
+                  </strong>
+                </div>
+              </div>
             </div>
-            <div className="stat-info">
-              <span className="stat-label">모인 금액</span>
-              <strong className="stat-value">
-                {feesData.totalCollected?.toLocaleString()}원
-              </strong>
-            </div>
-          </div>
-          
-          <div className="stat-card">
-            <div className="stat-icon stat-icon--target">
-              <Icons.Target />
-            </div>
-            <div className="stat-info">
-              <span className="stat-label">목표 금액</span>
-              <strong className="stat-value">
-                {feesData.targetAmount?.toLocaleString()}원
-              </strong>
-            </div>
-          </div>
-          
-          <div className="stat-card">
-            <div className="stat-icon stat-icon--fee">
-              <Icons.TrendingUp />
-            </div>
-            <div className="stat-info">
-              <span className="stat-label">월 회비</span>
-              <strong className="stat-value">
-                {feesData.monthlyFee?.toLocaleString()}원
-              </strong>
-            </div>
-          </div>
-          
-          <div className="stat-card">
-            <div className="stat-icon stat-icon--members">
-              <Icons.Users />
-            </div>
-            <div className="stat-info">
-              <span className="stat-label">미납 인원</span>
-              <strong className="stat-value stat-value--warning">
-                {feesData.unpaidMembers}명
-              </strong>
-            </div>
-          </div>
-        </div>
 
-        {/* 회원 목록 그리드 */}
-        <div className="members-grid">
-          {/* 미납 회원 섹션 */}
-          <div className="members-section members-section--unpaid">
-            <div className="section-header">
-              <h3>미납 회원</h3>
-              <span className="section-count">{unpaidMembers.length}명</span>
-            </div>
-            
-            {unpaidMembers.length > 0 ? (
-              <div className="members-list">
-                {unpaidMembers.map(member => (
-                  <div key={member.memberId} className="member-card member-card--unpaid">
-                    <div className="member-main">
-                      <div className="member-status">
-                        {getStatusIcon(member.status)}
+            <div className="members-grid">
+              <div className="members-section members-section--unpaid">
+                <div className="section-header">
+                  <h3>미납 회원</h3>
+                  <span className="section-count">{unpaidMembers.length}명</span>
+                </div>
+                
+                {unpaidMembers.length > 0 ? (
+                  <div className="members-list">
+                    {unpaidMembers.map(member => (
+                      <div key={member.memberId} className="member-card member-card--unpaid">
+                        <div className="member-main">
+                          <div className="member-status">
+                            {getStatusIcon(member.status)}
+                          </div>
+                          <div className="member-info">
+                            <span className="member-name">{member.name}</span>
+                            <span className="member-phone">
+                              <Icons.Phone />
+                              {member.phone || '번호 없음'}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <div className="member-payment">
+                          <div className="payment-amount">
+                            <span className="paid-amount">
+                              {member.paidAmount?.toLocaleString() || 0}원
+                            </span>
+                            <span className="amount-divider">/</span>
+                            <span className="total-amount">
+                              {feesData?.monthlyFee?.toLocaleString()}원
+                            </span>
+                          </div>
+                          <span className={`status-badge status-badge--${member.status.toLowerCase()}`}>
+                            {getStatusText(member.status)}
+                          </span>
+                        </div>
+                        
+                        <div className="member-actions">
+                          <button 
+                            className="action-btn action-btn--sms"
+                            onClick={() => openSmsModal(member)}
+                            title="메시지 보내기"
+                          >
+                            <Icons.MessageSquare />
+                          </button>
+                          <button 
+                            className="action-btn action-btn--confirm"
+                            onClick={() => openConfirmModal(member)}
+                            title="납부 확인"
+                          >
+                            <Icons.UserCheck />
+                          </button>
+                        </div>
                       </div>
-                      <div className="member-info">
-                        <span className="member-name">{member.name}</span>
-                        <span className="member-phone">
-                          <Icons.Phone />
-                          {member.phone || '번호 없음'}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="member-payment">
-                      <div className="payment-amount">
-                        <span className="paid-amount">
-                          {member.paidAmount?.toLocaleString() || 0}원
-                        </span>
-                        <span className="amount-divider">/</span>
-                        <span className="total-amount">
-                          {feesData.monthlyFee?.toLocaleString()}원
-                        </span>
-                      </div>
-                      <span className={`status-badge status-badge--${member.status.toLowerCase()}`}>
-                        {getStatusText(member.status)}
-                      </span>
-                    </div>
-                    
-                    <div className="member-actions">
-                      <button 
-                        className="action-btn action-btn--sms"
-                        onClick={() => openSmsModal(member)}
-                        title="메시지 보내기"
-                      >
-                        <Icons.MessageSquare />
-                      </button>
-                      <button 
-                        className="action-btn action-btn--confirm"
-                        onClick={() => openConfirmModal(member)}
-                        title="납부 확인"
-                      >
-                        <Icons.UserCheck />
-                      </button>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="empty-state">
-                <Icons.CheckCircle />
-                <p>모든 회원이 납부를 완료했어요!</p>
-              </div>
-            )}
-          </div>
-
-          {/* 납부 완료 회원 섹션 */}
-          <div className="members-section members-section--paid">
-            <div className="section-header">
-              <h3>납부 완료</h3>
-              <span className="section-count">{paidMembers.length}명</span>
-            </div>
-            
-            {paidMembers.length > 0 ? (
-              <div className="members-list">
-                {paidMembers.map(member => (
-                  <div key={member.memberId} className="member-card member-card--paid">
-                    <div className="member-main">
-                      <div className="member-status">
-                        {getStatusIcon(member.status)}
-                      </div>
-                      <div className="member-info">
-                        <span className="member-name">{member.name}</span>
-                        <span className="member-date">
-                          {member.paidAt ? new Date(member.paidAt).toLocaleDateString('ko-KR', {
-                            month: 'numeric',
-                            day: 'numeric'
-                          }) + ' 납부' : ''}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="member-payment">
-                      <span className="paid-full">
-                        {member.paidAmount?.toLocaleString()}원
-                      </span>
-                    </div>
+                ) : (
+                  <div className="empty-state">
+                    <Icons.CheckCircle />
+                    <p>모든 회원이 납부를 완료했어요!</p>
                   </div>
-                ))}
+                )}
               </div>
-            ) : (
-              <div className="empty-state">
-                <p>아직 납부한 회원이 없어요.</p>
+
+              <div className="members-section members-section--paid">
+                <div className="section-header">
+                  <h3>납부 완료</h3>
+                  <span className="section-count">{paidMembers.length}명</span>
+                </div>
+                
+                {paidMembers.length > 0 ? (
+                  <div className="members-list">
+                    {paidMembers.map(member => (
+                      <div key={member.memberId} className="member-card member-card--paid">
+                        <div className="member-main">
+                          <div className="member-status">
+                            {getStatusIcon(member.status)}
+                          </div>
+                          <div className="member-info">
+                            <span className="member-name">{member.name}</span>
+                            <span className="member-date">
+                              {member.paidAt ? new Date(member.paidAt).toLocaleDateString('ko-KR', {
+                                month: 'numeric',
+                                day: 'numeric'
+                              }) + ' 납부' : ''}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <div className="member-payment">
+                          <span className="paid-full">
+                            {member.paidAmount?.toLocaleString()}원
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="empty-state">
+                    <p>아직 납부한 회원이 없어요.</p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
+            </div>
+          </>
+        )}
       </div>
 
-      {/* 개별 SMS 모달 */}
       {isSmsModalOpen && selectedMember && (
         <div className="modal-overlay" onClick={() => setIsSmsModalOpen(false)}>
           <div className="modal-content sms-modal" onClick={e => e.stopPropagation()}>
@@ -678,10 +713,7 @@ const FeesPage = () => {
             </div>
             
             <div className="modal-footer">
-              <button 
-                className="btn-cancel" 
-                onClick={() => setIsSmsModalOpen(false)}
-              >
+              <button className="btn-cancel" onClick={() => setIsSmsModalOpen(false)}>
                 취소
               </button>
               <button 
@@ -696,7 +728,6 @@ const FeesPage = () => {
         </div>
       )}
 
-      {/* 일괄 SMS 모달 */}
       {isBulkSmsModalOpen && (
         <div className="modal-overlay" onClick={() => setIsBulkSmsModalOpen(false)}>
           <div className="modal-content sms-modal" onClick={e => e.stopPropagation()}>
@@ -738,10 +769,7 @@ const FeesPage = () => {
             </div>
             
             <div className="modal-footer">
-              <button 
-                className="btn-cancel" 
-                onClick={() => setIsBulkSmsModalOpen(false)}
-              >
+              <button className="btn-cancel" onClick={() => setIsBulkSmsModalOpen(false)}>
                 취소
               </button>
               <button 
@@ -756,7 +784,6 @@ const FeesPage = () => {
         </div>
       )}
 
-      {/* 납부 확인 모달 */}
       {isConfirmModalOpen && confirmMember && (
         <div className="modal-overlay" onClick={() => setIsConfirmModalOpen(false)}>
           <div className="modal-content confirm-modal" onClick={e => e.stopPropagation()}>
@@ -768,14 +795,11 @@ const FeesPage = () => {
               <strong>{confirmMember.name}</strong>님의 회비 납부를 확인하시겠습니까?
             </p>
             <p className="confirm-amount">
-              확인 금액: {feesData.monthlyFee?.toLocaleString()}원
+              확인 금액: {feesData?.monthlyFee?.toLocaleString()}원
             </p>
             
             <div className="modal-footer">
-              <button 
-                className="btn-cancel" 
-                onClick={() => setIsConfirmModalOpen(false)}
-              >
+              <button className="btn-cancel" onClick={() => setIsConfirmModalOpen(false)}>
                 취소
               </button>
               <button 
