@@ -62,6 +62,15 @@ const Icons = {
     </svg>
   ),
 
+  // ✅ 납부 완료 아이콘 추가
+  UserCheck: () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <polyline points="16 11 18 13 22 9"/>
+    </svg>
+  ),
+
   TrendingUp: () => (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
@@ -470,6 +479,7 @@ const DashboardPage = () => {
       }
 
       const data = await response.json();
+      console.log('Dashboard data:', data);  // ✅ 디버깅용
       setDashboardData(data);
       setLastUpdated(new Date(data.lastUpdated));
       
@@ -683,9 +693,11 @@ const DashboardPage = () => {
     }
   ];
 
-  // 계산된 데이터
+  // ✅ 계산된 데이터 - 수정됨
   const targetAmount = dashboardData.totalMembers * (dashboardData.fee || 0);
-  const remainingAmount = targetAmount - (dashboardData.totalAmount || 0);
+  
+  // ✅ 미수금 잔액: 백엔드에서 계산된 unpaidAmount 사용
+  const unpaidAmount = dashboardData.unpaidAmount || 0;
 
   return (
     <div className="dashboard-page">
@@ -826,10 +838,11 @@ const DashboardPage = () => {
         {/* 4. 하단 그리드 */}
         <div className="dashboard-bottom-grid">
           
-          {/* 상세 현황 */}
+          {/* ✅ 상세 현황 - 수정됨: 납부 인원 추가, 미수금 잔액 수정 */}
           <div className="glass-panel">
             <h3 className="panel-title">📊 상세 현황</h3>
             <div className="status-list">
+              {/* 총 목표 금액 */}
               <div className="status-item">
                 <div className="status-icon status-icon--coins">
                   <Icons.Coins />
@@ -841,6 +854,8 @@ const DashboardPage = () => {
                   </strong>
                 </div>
               </div>
+              
+              {/* 전체 멤버 */}
               <div className="status-item">
                 <div className="status-icon status-icon--users">
                   <Icons.UserGroup />
@@ -852,6 +867,21 @@ const DashboardPage = () => {
                   </strong>
                 </div>
               </div>
+              
+              {/* ✅ 납부 인원 추가 */}
+              <div className="status-item">
+                <div className="status-icon status-icon--check">
+                  <Icons.UserCheck />
+                </div>
+                <div className="status-info">
+                  <span className="status-label">납부 완료</span>
+                  <strong className="status-value status-value--success">
+                    {activeCycle?.paidMembers || dashboardData.paidMembers || 0}명
+                  </strong>
+                </div>
+              </div>
+              
+              {/* ✅ 미수금 잔액 수정 */}
               <div className="status-item">
                 <div className="status-icon status-icon--trending">
                   <Icons.TrendingUp />
@@ -861,11 +891,13 @@ const DashboardPage = () => {
                   <strong className="status-value status-value--warning">
                     {activeCycle?.hasActiveCycle 
                       ? ((activeCycle.targetAmount || 0) - (activeCycle.totalCollected || 0)).toLocaleString()
-                      : remainingAmount > 0 ? remainingAmount.toLocaleString() : 0
+                      : unpaidAmount.toLocaleString()
                     }원
                   </strong>
                 </div>
               </div>
+              
+              {/* 1인당 회비 */}
               <div className="status-item">
                 <div className="status-icon status-icon--calendar">
                   <Icons.Calendar />
@@ -1018,4 +1050,3 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
-

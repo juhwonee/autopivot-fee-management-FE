@@ -429,10 +429,10 @@
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.4), rgba(248, 113, 113, 0.3));
 }
 
-/* Quick Actions */
+/* Quick Actions - 4열로 변경 */
 .quick-actions-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--space-md);
   margin-bottom: var(--space-md);
 }
@@ -489,6 +489,17 @@
 .action-desc {
   font-size: 13px;
   color: var(--slate-500);
+}
+
+/* 다운로드 버튼 특별 스타일 */
+.action-card--download .action-icon {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #059669;
+}
+
+.action-card--download:hover {
+  border-color: #10b981;
+  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.15);
 }
 
 /* Bottom Grid */
@@ -567,14 +578,20 @@
   color: #2563eb;
 }
 
+/* ✅ 납부 완료 아이콘 스타일 추가 */
+.status-icon--check {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #059669;
+}
+
 .status-icon--trending {
   background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
   color: #dc2626;
 }
 
 .status-icon--calendar {
-  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-  color: #059669;
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+  color: #4f46e5;
 }
 
 .status-info {
@@ -594,6 +611,11 @@
   font-size: 16px;
   font-weight: 700;
   color: var(--slate-800);
+}
+
+/* ✅ 성공 색상 추가 */
+.status-value--success {
+  color: #16a34a;
 }
 
 .status-value--warning {
@@ -1208,93 +1230,7 @@
   }
   
   .quick-actions-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-sm);
-  }
-  
-  .action-card {
-    padding: var(--space-md) var(--space-sm);
-    min-height: 110px;
-  }
-  
-  .action-icon {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .action-title {
-    font-size: 13px;
-  }
-  
-  .action-desc {
-    font-size: 11px;
-  }
-  
-  .dashboard-bottom-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .chat-panel {
-    min-height: 320px;
-    max-height: 380px;
-  }
-}
-
-@media (max-width: 480px) {
-  .payment-rate-big {
-    font-size: 36px;
-  }
-  
-  .action-card {
-    min-height: 100px;
-    gap: var(--space-xs);
-  }
-  
-  .action-icon {
-    width: 36px;
-    height: 36px;
-  }
-  
-  .action-title {
-    font-size: 12px;
-  }
-  
-  .action-desc {
-    font-size: 10px;
-  }
-  
-  .quick-questions {
-    display: none;
-  }
-  
-  .cycle-modal {
-    width: 95%;
-  }
-}
-
-/* 1. quick-actions-grid를 4열로 변경 (기존 코드 수정) */
-.quick-actions-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);  /* 3 → 4로 변경 */
-  gap: var(--space-md);
-  margin-bottom: var(--space-md);
-}
-
-/* 2. 다운로드 버튼 특별 스타일 추가 (새로 추가) */
-.action-card--download .action-icon {
-  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-  color: #059669;
-}
-
-.action-card--download:hover {
-  border-color: #10b981;
-  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.15);
-}
-
-/* 3. 모바일 반응형 수정 (기존 @media 내용 수정) */
-@media (max-width: 768px) {
-  .quick-actions-grid {
-    grid-template-columns: repeat(4, 1fr);  /* 4열 유지 */
+    grid-template-columns: repeat(4, 1fr);
     gap: var(--space-sm);
   }
   
@@ -1315,14 +1251,49 @@
   .action-desc {
     font-size: 10px;
   }
+  
+  .dashboard-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .chat-panel {
+    min-height: 320px;
+    max-height: 380px;
+  }
 }
 
 @media (max-width: 480px) {
+  .payment-rate-big {
+    font-size: 36px;
+  }
+  
   .quick-actions-grid {
-    grid-template-columns: repeat(2, 1fr);  /* 작은 화면에서 2열 */
+    grid-template-columns: repeat(2, 1fr);
   }
   
   .action-card {
     min-height: 90px;
+    gap: var(--space-xs);
+  }
+  
+  .action-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .action-title {
+    font-size: 12px;
+  }
+  
+  .action-desc {
+    font-size: 10px;
+  }
+
+  .cycle-modal {
+    width: 95%;
+  }
+  
+  .quick-questions {
+    display: none;
   }
 }
