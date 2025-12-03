@@ -377,8 +377,7 @@ const ChatModal = ({ groupId, onClose }) => {
     { text: '미납자 현황', icon: '📋' },
     { text: '이번 달 회비', icon: '💰' },
     { text: '사용법 안내', icon: '💡' },
-    { text: '납부 통계', icon: '📊' },
-    { text: '연체자 목록', icon: '⚠️' }
+    { text: '납부 통계', icon: '📊' }
   ];
 
   const scrollToBottom = () => {
@@ -390,7 +389,6 @@ const ChatModal = ({ groupId, onClose }) => {
   }, [messages, isLoading]);
 
   useEffect(() => {
-    // 모달 열릴 때 input에 포커스
     setTimeout(() => {
       if (inputRef.current) inputRef.current.focus();
     }, 100);
