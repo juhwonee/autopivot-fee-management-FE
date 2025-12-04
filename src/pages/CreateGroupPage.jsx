@@ -132,7 +132,7 @@ const CreateGroupPage = () => {
   };
 
   const handleAddMembers = async () => {
-    if (hasExcelFile === false || !excelFile) {
+    if (!hasExcelFile || !excelFile) {
       toast.success('그룹이 성공적으로 생성되었습니다!');
       setTimeout(() => {
         navigate('/dashboard');
@@ -188,12 +188,7 @@ const CreateGroupPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (hasExcelFile === null) {
-      toast.error('엑셀 파일 보유 여부를 선택해주세요.');
-      return;
-    }
-
-    if (hasExcelFile && !excelFile) {
+    if (!hasExcelFile || !excelFile) {
       toast.error('엑셀 파일을 업로드해주세요.');
       return;
     }
@@ -412,31 +407,30 @@ const CreateGroupPage = () => {
                 )}
               </div>
 
+              {/* ✅ 수정된 버튼 영역 */}
               <div className="form-actions">
                 <Button
                   type="button"
                   variant="secondary"
                   size="large"
                   onClick={() => setShowSkipModal(true)}
-                  style={{ flex: 1, borderRadius: '16px', height: '54px' }}
+                  style={{ flex: hasExcelFile ? 1 : 'none', width: hasExcelFile ? 'auto' : '100%', borderRadius: '16px', height: '54px' }}
                   disabled={isLoading}
                 >
                   건너뛰기
                 </Button>
 
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="large"
-                  disabled={isLoading}
-                  style={{ flex: 2, borderRadius: '16px', height: '54px' }}
-                >
-                  {isLoading
-                    ? '멤버 추가 중...'
-                    : hasExcelFile
-                      ? '멤버 추가 완료'
-                      : '대시보드로 이동'}
-                </Button>
+                {hasExcelFile && (
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="large"
+                    disabled={isLoading || !excelFile}
+                    style={{ flex: 2, borderRadius: '16px', height: '54px' }}
+                  >
+                    {isLoading ? '멤버 추가 중...' : '멤버 추가 완료'}
+                  </Button>
+                )}
               </div>
             </div>
           )}
