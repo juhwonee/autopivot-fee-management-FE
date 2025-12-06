@@ -203,10 +203,10 @@ const GroupSelectPage = () => {
                 </p>
 
                 {/* 통계 요약 (아이콘으로 심플하게) */}
-                <div className="stat-item">
+                <div className="stat-item" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '18px' }}>💰</span>
-                  <span style={{ color: '#64748b', fontSize: '14px' }}>월 회비</span>
-                  <span className="stat-value" style={{ marginLeft: 'auto' }}>
+                  <span style={{ color: '#64748b', fontSize: '14px', whiteSpace: 'nowrap' }}>월 회비</span>
+                  <span className="stat-value" style={{ marginLeft: 'auto', whiteSpace: 'nowrap', fontWeight: 600 }}>
                     {group.fee?.toLocaleString() || 0}원
                   </span>
                 </div>
