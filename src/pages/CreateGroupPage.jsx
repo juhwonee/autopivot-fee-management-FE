@@ -37,7 +37,7 @@ const CreateGroupPage = () => {
 
   const generateAccountName = (name) => {
     if (!name.trim()) return '';
-    return `${name.trim()} 모임 통장`;
+    return `${name.trim()} 모임통장`;
   };
 
   const handleGroupNameChange = (e) => {
